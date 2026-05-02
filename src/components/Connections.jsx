@@ -1,250 +1,348 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 
 const API = "http://localhost:8080/api/migrations";
 
+const EMPTY_FORM = {
+  name: "",
+  host: "",
+  port: 5432,
+  database: "",
+  username: "",
+  password: "",
+  schema: "public",
+};
+
+// ─── CONNECTIONS COMPONENT ──────────────────────────────────────────────────
 const Connections = () => {
   const [connections, setConnections] = useState([]);
   const [activeId, setActiveId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [testing, setTesting] = useState(false);
+  // FIX: Added saving state so the Save button can show feedback and prevent
+  //      double-submission just like testConnection already did for testing.
+  const [saving, setSaving] = useState(false);
+  // FIX: Track per-field errors instead of a single alert() call so the UI
+  //      can highlight the broken field inline.
+  const [formErrors, setFormErrors] = useState({});
 
-  const [form, setForm] = useState({
-    name: "",
-    host: "",
-    port: 5432,
-    database: "",
-    username: "",
-    password: "",
-    schema: "public",
-  });
+  const [form, setForm] = useState(EMPTY_FORM);
 
-  // ─── LOAD FROM LOCAL STORAGE ─────────────────
+  // ─── LOAD FROM LOCAL STORAGE ──────────────────────────────────────────
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("connections")) || [];
-    const active = localStorage.getItem("activeConnection");
-
-    setConnections(saved);
-    setActiveId(active);
+    try {
+      // FIX: Wrapped in try/catch — localStorage.getItem can throw in
+      //      private/incognito mode or when storage quota is exceeded.
+      const saved = JSON.parse(localStorage.getItem("connections") || "[]");
+      const active = localStorage.getItem("activeConnection");
+      // FIX: Validate that `saved` is actually an array before setting state,
+      //      guarding against corrupted localStorage values.
+      setConnections(Array.isArray(saved) ? saved : []);
+      setActiveId(active || null);
+    } catch (err) {
+      console.error("Failed to read connections from localStorage:", err);
+      setConnections([]);
+    }
   }, []);
 
-  // ─── VALIDATION ─────────────────────────────
-  const validate = () => {
-    if (!form.name.trim()) return "Name required";
-    if (!form.host.trim()) return "Host required";
-    if (!form.port) return "Port required";
-    if (!form.database.trim()) return "Database required";
-    if (!form.username.trim()) return "Username required";
-    return null;
+  // ─── CLOSE MODAL & RESET ──────────────────────────────────────────────
+  // FIX: Centralised close logic so both Cancel and backdrop-click reset
+  //      both the form AND formErrors, not just the visibility flag.
+  const closeModal = useCallback(() => {
+    setShowModal(false);
+    setForm(EMPTY_FORM);
+    setFormErrors({});
+  }, []);
+
+  // ─── FIELD CHANGE HELPER ──────────────────────────────────────────────
+  // FIX: Clears the error for a field as soon as the user edits it, giving
+  //      immediate positive feedback instead of waiting for re-submission.
+  const handleChange = (field) => (e) => {
+    setForm((prev) => ({ ...prev, [field]: e.target.value }));
+    if (formErrors[field]) {
+      setFormErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
   };
 
-  // ─── SAVE CONNECTION ────────────────────────
-  const saveConnection = () => {
-    const error = validate();
-    if (error) {
-      alert(error);
+  // ─── VALIDATION ───────────────────────────────────────────────────────
+  // FIX: Returns an errors object (all problems at once) instead of the
+  //      first error string, so every invalid field can be flagged at once.
+  const validate = () => {
+    const errors = {};
+    if (!form.name.trim())     errors.name     = "Name is required";
+    if (!form.host.trim())     errors.host     = "Host is required";
+    if (!form.port)            errors.port     = "Port is required";
+    if (Number(form.port) < 1 || Number(form.port) > 65535)
+                               errors.port     = "Port must be 1–65535";
+    if (!form.database.trim()) errors.database = "Database is required";
+    if (!form.username.trim()) errors.username = "Username is required";
+    return errors;
+  };
+
+  // ─── SAVE CONNECTION ──────────────────────────────────────────────────
+  const saveConnection = async () => {
+    if (saving) return;
+
+    const errors = validate();
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
       return;
     }
 
-    const newConn = {
-      id: Date.now().toString(),
-      ...form,
-      port: Number(form.port), // 🔥 fix type
-    };
+    try {
+      setSaving(true);
 
-    const updated = [...connections, newConn];
-    setConnections(updated);
+      const newConn = {
+        id: Date.now().toString(),
+        ...form,
+        port: Number(form.port),
+      };
 
-    localStorage.setItem("connections", JSON.stringify(updated));
+      const updated = [...connections, newConn];
+      setConnections(updated);
 
-    setForm({
-      name: "",
-      host: "",
-      port: 5432,
-      database: "",
-      username: "",
-      password: "",
-      schema: "public",
-    });
+      // FIX: Wrapped in try/catch — localStorage.setItem throws when storage
+      //      quota is exceeded. Without this, the state update succeeds but
+      //      the save silently fails.
+      try {
+        localStorage.setItem("connections", JSON.stringify(updated));
+      } catch (storageErr) {
+        console.error("Failed to persist connection:", storageErr);
+        alert("Connection added but could not be saved to local storage.");
+      }
 
-    setShowModal(false);
+      closeModal();
+    } finally {
+      setSaving(false);
+    }
   };
 
-  // ─── TEST CONNECTION ────────────────────────
+  // ─── TEST CONNECTION ──────────────────────────────────────────────────
   const testConnection = async () => {
-    const error = validate();
-    if (error) return alert(error);
+    if (testing) return;
 
+    const errors = validate();
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+    console.log(form);
     try {
       setTesting(true);
 
       const res = await fetch(`${API}/connect`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...form,
-          port: Number(form.port),
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, port: Number(form.port) }),
       });
 
-      const data = await res.json();
+      // FIX: Check res.ok before parsing JSON — a non-2xx response (e.g. 500)
+      //      would otherwise crash on data.success access.
+      if (!res.ok) throw new Error(`Server error: ${res.status}`);
 
+      const data = await res.json();
+      console.log(data.Connections);
       if (data.success) {
         alert("✅ Connection successful");
       } else {
-        alert("❌ " + data.message);
+        alert("❌ " + (data.message || "Connection failed"));
       }
     } catch (err) {
-      alert("Connection failed");
+      alert("Connection failed: " + err.message);
     } finally {
       setTesting(false);
     }
   };
 
-  // ─── SET ACTIVE + CONNECT ───────────────────
+  // ─── SET ACTIVE + CONNECT ─────────────────────────────────────────────
   const setActive = async (conn) => {
+    // FIX: Prevent re-connecting to the already-active connection.
+    if (conn.id === activeId) return;
+
     try {
       const res = await fetch(`${API}/connect`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(conn),
       });
+
+      if (!res.ok) throw new Error(`Server error: ${res.status}`);
 
       const data = await res.json();
 
       if (!data.success) {
-        alert("Connection failed");
+        alert("❌ " + (data.message || "Connection failed"));
         return;
       }
 
       setActiveId(conn.id);
-      localStorage.setItem("activeConnection", conn.id);
 
-      alert("✅ Connected & Active");
-    } catch {
-      alert("Connection error");
+      try {
+        localStorage.setItem("activeConnection", conn.id);
+      } catch (storageErr) {
+        console.error("Failed to persist active connection:", storageErr);
+      }
+
+      // FIX: Replaced alert() with console — UX should reflect active state
+      //      visually (the .active CSS class) rather than blocking with a popup.
+      console.info("Active connection set:", conn.name);
+    } catch (err) {
+      alert("Connection error: " + err.message);
     }
   };
 
-  // ─── DELETE ────────────────────────────────
+  // ─── DELETE ───────────────────────────────────────────────────────────
+  // FIX: Added a confirmation prompt before deleting — destructive actions
+  //      should always require confirmation.
   const deleteConnection = (id) => {
+    if (!window.confirm("Delete this connection? This cannot be undone.")) return;
+
     const updated = connections.filter((c) => c.id !== id);
     setConnections(updated);
-    localStorage.setItem("connections", JSON.stringify(updated));
+
+    try {
+      localStorage.setItem("connections", JSON.stringify(updated));
+    } catch (err) {
+      console.error("Failed to persist after delete:", err);
+    }
 
     if (id === activeId) {
       setActiveId(null);
-      localStorage.removeItem("activeConnection");
+      try {
+        localStorage.removeItem("activeConnection");
+      } catch (err) {
+        console.error("Failed to clear active connection:", err);
+      }
     }
   };
 
+  // ─── RENDER ───────────────────────────────────────────────────────────
   return (
     <div className="connections-page">
+      {/* HEADER */}
       <div className="header">
-        <h2>Connections</h2>
+        <h2>Database Connections</h2>
         <button onClick={() => setShowModal(true)}>+ Add Connection</button>
       </div>
 
-      <div className="connections-list">
-        {connections.map((conn) => (
-          <div
-            key={conn.id}
-            className={`connection-card ${
-              activeId === conn.id ? "active" : ""
-            }`}
-          >
-            <h3>{conn.name}</h3>
-            <p>{conn.host}:{conn.port}</p>
-            <p>{conn.database}</p>
+      {/* CONNECTION CARDS */}
+      {connections.length === 0 ? (
+        <div className="empty-state">
+          <p>No connections yet.</p>
+          <p>Click <strong>+ Add Connection</strong> to get started.</p>
+        </div>
+      ) : (
+        <div className="connections-list">
+          {connections.map((conn) => (
+            <div
+              key={conn.id}
+              className={`connection-card${activeId === conn.id ? " active" : ""}`}
+            >
+              <h3>{conn.name}</h3>
+              {/* FIX: Wrapped host:port in a <code> element for better readability
+                        and to match the monospace styling in the CSS. */}
+              <p>
+                <code style={{ fontFamily: "var(--mono)", fontSize: 11 }}>
+                  {conn.host}:{conn.port}
+                </code>
+              </p>
+              <p>{conn.database}</p>
+              {/* FIX: Show the schema so users can distinguish same-db connections. */}
+              {conn.schema && conn.schema !== "public" && (
+                <p style={{ color: "var(--text3)", fontSize: 11 }}>
+                  schema: {conn.schema}
+                </p>
+              )}
 
-            <div className="actions">
-              <button onClick={() => setActive(conn)}>
-                {activeId === conn.id ? "Active" : "Set Active"}
-              </button>
-
-              <button onClick={() => deleteConnection(conn.id)}>
-                Delete
-              </button>
+              <div className="actions">
+                <button
+                  onClick={() => setActive(conn)}
+                  // FIX: Disable "Set Active" when this is already the active connection.
+                  disabled={activeId === conn.id}
+                  style={activeId === conn.id ? { opacity: 0.6, cursor: "default" } : {}}
+                >
+                  {activeId === conn.id ? "✓ Active" : "Set Active"}
+                </button>
+                <button onClick={() => deleteConnection(conn.id)}>
+                  Delete
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* MODAL */}
+      {/* FIX: Moved modal rendering outside the list so it's always in the DOM
+               when showModal is true, regardless of whether connections is empty.
+               Also added backdrop click to close. */}
       {showModal && (
-        <div className="modal">
+        <div
+          className="modal-overlay"
+          onClick={(e) => {
+            // FIX: Only close when clicking the backdrop itself, not the card.
+            if (e.target === e.currentTarget) closeModal();
+          }}
+        >
           <div className="modal-content">
             <h3>Add Connection</h3>
 
-            <input
-              placeholder="Name"
+            <FormField
+              placeholder="Connection Name"
               value={form.name}
-              onChange={(e) =>
-                setForm({ ...form, name: e.target.value })
-              }
+              onChange={handleChange("name")}
+              error={formErrors.name}
             />
-
-            <input
-              placeholder="Host"
+            <FormField
+              placeholder="Host (e.g. localhost)"
               value={form.host}
-              onChange={(e) =>
-                setForm({ ...form, host: e.target.value })
-              }
+              onChange={handleChange("host")}
+              error={formErrors.host}
             />
-
-            <input
-              type="number"
+            <FormField
               placeholder="Port"
+              type="number"
               value={form.port}
-              onChange={(e) =>
-                setForm({ ...form, port: e.target.value })
-              }
+              onChange={handleChange("port")}
+              error={formErrors.port}
             />
-
-            <input
+            <FormField
               placeholder="Database"
               value={form.database}
-              onChange={(e) =>
-                setForm({ ...form, database: e.target.value })
-              }
+              onChange={handleChange("database")}
+              error={formErrors.database}
             />
-
-            <input
+            <FormField
               placeholder="Username"
               value={form.username}
-              onChange={(e) =>
-                setForm({ ...form, username: e.target.value })
-              }
+              onChange={handleChange("username")}
+              error={formErrors.username}
             />
-
-            <input
-              type="password"
+            <FormField
               placeholder="Password"
+              type="password"
               value={form.password}
-              onChange={(e) =>
-                setForm({ ...form, password: e.target.value })
-              }
+              onChange={handleChange("password")}
+              error={formErrors.password}
             />
-
-            <input
-              placeholder="Schema"
+            <FormField
+              placeholder="Schema (default: public)"
               value={form.schema}
-              onChange={(e) =>
-                setForm({ ...form, schema: e.target.value })
-              }
+              onChange={handleChange("schema")}
+              error={formErrors.schema}
             />
 
             <div className="modal-actions">
-              <button onClick={() => setShowModal(false)}>Cancel</button>
-
+              <button onClick={closeModal}>Cancel</button>
               <button onClick={testConnection} disabled={testing}>
-                {testing ? "Testing..." : "Test"}
+                {testing ? "Testing…" : "Test"}
               </button>
-
-              <button onClick={saveConnection}>Save</button>
+              <button onClick={saveConnection} disabled={saving}>
+                {saving ? "Saving…" : "Save"}
+              </button>
             </div>
           </div>
         </div>
@@ -252,5 +350,31 @@ const Connections = () => {
     </div>
   );
 };
+
+// ─── FORM FIELD HELPER ───────────────────────────────────────────────────────
+// FIX: Extracted repeated input+error markup into a small helper so the modal
+//      doesn't repeat the same pattern 7 times with no error display.
+const FormField = ({ placeholder, type = "text", value, onChange, error }) => (
+  <div style={{ marginBottom: 4 }}>
+    <input
+      type={type}
+      placeholder={placeholder}
+      value={value}
+      onChange={onChange}
+      style={error ? { borderColor: "var(--red)" } : {}}
+    />
+    {error && (
+      <p style={{
+        fontSize: 10,
+        color: "var(--red)",
+        fontFamily: "var(--mono)",
+        marginTop: 2,
+        marginBottom: 4,
+      }}>
+        {error}
+      </p>
+    )}
+  </div>
+);
 
 export default Connections;

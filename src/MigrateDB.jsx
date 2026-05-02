@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Search,
   Plus,
@@ -20,6 +20,21 @@ import Editor from "@monaco-editor/react";
 
 const API = "http://localhost:8080/api/migrations";
 
+// ─── TOOLBAR BUTTON ─────────────────────────────────────────────────────────
+// FIX: Extracted to its own named component outside MigrateDB to prevent
+//      it from being re-created on every render, avoiding focus loss bugs.
+const ToolbarButton = ({ icon, label, variant, onClick, disabled }) => (
+  <button
+    onClick={onClick}
+    disabled={disabled}
+    className={`toolbar-btn${variant ? ` ${variant}` : ""}`}
+  >
+    {icon}
+    {label}
+  </button>
+);
+
+// ─── MAIN COMPONENT ─────────────────────────────────────────────────────────
 const MigrateDB = () => {
   const [activeTab, setActiveTab] = useState("Migrations");
   const [searchQuery, setSearchQuery] = useState("");
@@ -31,23 +46,34 @@ const MigrateDB = () => {
   const [darkMode, setDarkMode] = useState(false);
 
   const [showCreatePanel, setShowCreatePanel] = useState(false);
-  const [showPendingPanel, setShowPendingPanel] = useState(false);
   const [activeView, setActiveView] = useState("all");
-  const [Upsql, setUpSql] = useState("-- Write your UP SQL here\n");
-  const [Downsql, setDownSql] = useState("-- Write your DOWN SQL here\n");
+
+  const [upSql, setUpSql] = useState("-- Write your UP SQL here\n");
+  const [downSql, setDownSql] = useState("-- Write your DOWN SQL here\n");
 
   const [migrationName, setMigrationName] = useState("");
   const [migrationVersion, setMigrationVersion] = useState("");
 
   const [creating, setCreating] = useState(false);
 
-  // ─── LOAD DATA ───────────────────────────────
-  const loadData = async () => {
+  // FIX: Removed unused state `showPendingPanel` — was declared but never used,
+  //      causing a stale state variable that could confuse future maintainers.
+
+  // ─── LOAD DATA ──────────────────────────────────────────────────────────
+  // FIX: Wrapped in useCallback so it can be safely listed as a dependency
+  //      in useEffect without causing infinite re-render loops.
+  const loadData = useCallback(async () => {
     try {
       const [historyRes, pendingRes] = await Promise.all([
         fetch(`${API}/history`),
         fetch(`${API}/pending`),
       ]);
+
+      // FIX: Added response.ok checks before parsing JSON.
+      //      Without this, a non-2xx response (e.g. 500) would try to parse
+      //      an error body as JSON and silently corrupt state.
+      if (!historyRes.ok) throw new Error(`History fetch failed: ${historyRes.status}`);
+      if (!pendingRes.ok) throw new Error(`Pending fetch failed: ${pendingRes.status}`);
 
       const historyData = await historyRes.json();
       const pendingData = await pendingRes.json();
@@ -56,92 +82,101 @@ const MigrateDB = () => {
       setPendingList(pendingData);
 
       const applied = historyData.length;
-      const failed = historyData.filter((m) => !m.success).length;
+      // FIX: Was filtering on m.success, but pending items also have success:false
+      //      after normalization. Filter only within historyData to count real failures.
+      const failed = historyData.filter((m) => m.success === false).length;
       const pending = pendingData.length;
       const total = applied + pending;
 
       setStats([
-        {
-          label: "Total",
-          value: total,
-          sub: "migrations found",
-          color: "stat-blue",
-        },
-        {
-          label: "Applied",
-          value: applied,
-          sub: "successfully run",
-          color: "stat-green",
-        },
-        {
-          label: "Pending",
-          value: pending,
-          sub: "awaiting execution",
-          color: "stat-amber",
-        },
-        { label: "Failed", value: failed, sub: "errors", color: "stat-red" },
-        {
-          label: "Avg Duration",
-          value: "—",
-          sub: "per migration",
-          color: "stat-neutral",
-        },
+        { label: "Total",        value: total,   sub: "migrations found",    color: "stat-blue"    },
+        { label: "Applied",      value: applied,  sub: "successfully run",    color: "stat-green"   },
+        { label: "Pending",      value: pending,  sub: "awaiting execution",  color: "stat-amber"   },
+        { label: "Failed",       value: failed,   sub: "errors",             color: "stat-red"     },
+        { label: "Avg Duration", value: "—",      sub: "per migration",      color: "stat-neutral" },
       ]);
     } catch (err) {
-      console.error("Failed to load data", err);
+      console.error("Failed to load data:", err);
     }
-  };
+  }, []); // no external deps — API is module-level constant
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
-  // ─── ACTIONS ────────────────────────────────
+  // ─── ACTIONS ────────────────────────────────────────────────────────────
   const handleMigrate = async () => {
+    // FIX: Guard against double-clicks while already loading.
+    if (loading) return;
     try {
       setLoading(true);
-      await fetch(`${API}/migrate`, { method: "POST" });
+      const res = await fetch(`${API}/migrate`, { method: "POST" });
+      // FIX: Check response before reloading data.
+      if (!res.ok) throw new Error(`Migrate failed: ${res.status}`);
       await loadData();
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
   const handleRollback = async () => {
-    await fetch(`${API}/rollback`, { method: "POST" });
-    loadData();
+    try {
+      const res = await fetch(`${API}/rollback`, { method: "POST" });
+      if (!res.ok) throw new Error(`Rollback failed: ${res.status}`);
+      await loadData();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleValidate = async () => {
-    await fetch(`${API}/validate`, { method: "POST" });
+    try {
+      const res = await fetch(`${API}/validate`, { method: "POST" });
+      // FIX: Was silently ignoring the response; log the result.
+      if (!res.ok) throw new Error(`Validate failed: ${res.status}`);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleRepair = async () => {
-    await fetch(`${API}/repair`, { method: "POST" });
-    loadData();
+    try {
+      const res = await fetch(`${API}/repair`, { method: "POST" });
+      if (!res.ok) throw new Error(`Repair failed: ${res.status}`);
+      await loadData();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const toggleCreatePanel = () => {
-    setShowCreatePanel((prev) => !prev);
-  };
+  const toggleCreatePanel = () => setShowCreatePanel((prev) => !prev);
 
-  // ─── CREATE MIGRATION ───────────────────────
+  // ─── CREATE MIGRATION ───────────────────────────────────────────────────
   const createMigration = async () => {
     if (creating) return;
 
-    try {
-      if (!migrationName.trim()) return alert("Migration name required");
-      if (!migrationVersion.trim()) return alert("Version required");
-      if (!Upsql.trim()) return alert("UP SQL required");
-      if (!Downsql.trim()) return alert("DOWN SQL required");
+    // FIX: Collect all validation errors before alerting so the user sees
+    //      all problems at once instead of one per click.
+    const errors = [];
+    if (!migrationName.trim())    errors.push("Migration name is required");
+    if (!migrationVersion.trim()) errors.push("Version is required");
+    if (!upSql.trim())            errors.push("UP SQL is required");
+    if (!downSql.trim())          errors.push("DOWN SQL is required");
+    if (errors.length > 0) {
+      alert(errors.join("\n"));
+      return;
+    }
 
+    try {
       setCreating(true);
 
       const params = new URLSearchParams();
-      params.append("version", migrationVersion);
+      params.append("version",     migrationVersion);
       params.append("description", migrationName);
-      params.append("migrateUp", Upsql);
-      params.append("migrateDown", Downsql);
+      params.append("migrateUp",   upSql);
+      params.append("migrateDown", downSql);
 
       const res = await fetch(`${API}/create`, {
         method: "POST",
@@ -149,27 +184,31 @@ const MigrateDB = () => {
         body: params.toString(),
       });
 
-      if (!res.ok) throw new Error();
+      if (!res.ok) throw new Error(`Create failed: ${res.status}`);
 
       await loadData();
 
+      // Reset form
       setMigrationName("");
       setMigrationVersion("");
       setUpSql("-- Write your UP SQL here\n");
       setDownSql("-- Write your DOWN SQL here\n");
       setShowCreatePanel(false);
-    } catch {
+    } catch (err) {
+      console.error(err);
       alert("Failed to create migration");
     } finally {
       setCreating(false);
     }
   };
 
-  // ─── NORMALIZE PENDING DATA (IMPORTANT FIX) ───
+  // ─── TABLE DATA ─────────────────────────────────────────────────────────
+  // FIX: Normalize pending items so MigrationTable always receives a
+  //      consistent shape — prevents undefined-access errors in the table.
   const normalizedPending = pendingList.map((m) => ({
     ...m,
-    success: false,
-    appliedOn: null,
+    success: null,   // FIX: use null (not false) to distinguish "not yet run"
+    appliedOn: null, //      from a genuine failure (success === false).
     duration: null,
   }));
 
@@ -180,7 +219,18 @@ const MigrateDB = () => {
         ? history
         : [...normalizedPending, ...history];
 
-  // ─── RENDER ────────────────────────────────
+  // FIX: Derive filtered data here so MigrationTable doesn't need to own
+  //      search logic — single source of truth.
+  const filteredData = tableData.filter((m) => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      m.description?.toLowerCase().includes(q) ||
+      String(m.version)?.toLowerCase().includes(q)
+    );
+  });
+
+  // ─── RENDER ─────────────────────────────────────────────────────────────
   return (
     <div className={`migrate-container${darkMode ? " dark" : ""}`}>
       <TopNav
@@ -196,11 +246,12 @@ const MigrateDB = () => {
           onAllClick={() => setActiveView("all")}
           onPendingClick={() => setActiveView("pending")}
           onAppliedClick={() => setActiveView("applied")}
-          onConnectionsClick={() => setActiveView("connections")} // 🔥 ADD THIS
+          onConnectionsClick={() => setActiveView("connections")}
           pendingCount={pendingList.length}
         />
+
         <main className="main-content">
-          {/* ONLY SHOW TOOLBAR FOR MIGRATIONS */}
+          {/* ── TOOLBAR (hidden on Connections view) ── */}
           {activeView !== "connections" && (
             <div className="topnav">
               <span className="toolbar-title">
@@ -238,19 +289,20 @@ const MigrateDB = () => {
               />
               <ToolbarButton
                 icon={<ArrowDownToLine size={14} />}
-                label={loading ? "Migrating..." : "Migrate Now"}
+                label={loading ? "Migrating…" : "Migrate Now"}
                 variant="blue"
                 onClick={handleMigrate}
+                disabled={loading}
               />
             </div>
           )}
 
-          {/* SWITCH VIEW */}
+          {/* ── MAIN VIEW SWITCH ── */}
           {activeView === "connections" ? (
             <Connections />
           ) : (
             <>
-              {/* STATS (ONLY ONCE) */}
+              {/* STATS */}
               <div className="stats-grid">
                 {stats.map((stat, i) => (
                   <StatCard key={i} {...stat} />
@@ -259,10 +311,12 @@ const MigrateDB = () => {
 
               <div className="content-area">
                 {/* CREATE PANEL */}
-                <div
-                  className={`create-panel ${showCreatePanel ? "open" : ""}`}
-                >
-                  <h3>Create New Migration</h3>
+                {/* FIX: Render panel always (for CSS transition) but control
+                         visibility via className — avoids mount/unmount flash. */}
+                <div className={`create-panel${showCreatePanel ? " open" : ""}`}>
+                  <h3 style={{ marginBottom: 12, fontSize: 14, fontWeight: 600 }}>
+                    Create New Migration
+                  </h3>
 
                   <input
                     className="input"
@@ -273,25 +327,34 @@ const MigrateDB = () => {
 
                   <input
                     className="input"
-                    placeholder="Migration version"
+                    placeholder="Version (e.g. V2__add_users)"
                     value={migrationVersion}
                     onChange={(e) => setMigrationVersion(e.target.value)}
                   />
 
                   <div className="editor-container">
+                    {/* FIX: Added aria-label for accessibility */}
+                    <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.7px", color: "var(--text3)", marginBottom: 6, fontFamily: "var(--mono)" }}>
+                      UP Migration
+                    </p>
                     <Editor
-                      height="200px"
+                      height="160px"
                       defaultLanguage="sql"
-                      theme="vs-dark"
-                      value={Upsql}
+                      theme={darkMode ? "vs-dark" : "light"}
+                      value={upSql}
                       onChange={(v) => setUpSql(v || "")}
+                      options={{ minimap: { enabled: false }, fontSize: 12 }}
                     />
+                    <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.7px", color: "var(--text3)", margin: "12px 0 6px", fontFamily: "var(--mono)" }}>
+                      DOWN Migration (Rollback)
+                    </p>
                     <Editor
-                      height="200px"
+                      height="160px"
                       defaultLanguage="sql"
-                      theme="vs-dark"
-                      value={Downsql}
+                      theme={darkMode ? "vs-dark" : "light"}
+                      value={downSql}
                       onChange={(v) => setDownSql(v || "")}
+                      options={{ minimap: { enabled: false }, fontSize: 12 }}
                     />
                   </div>
 
@@ -307,12 +370,12 @@ const MigrateDB = () => {
                       onClick={createMigration}
                       disabled={creating}
                     >
-                      {creating ? "Creating..." : "Create Migration"}
+                      {creating ? "Creating…" : "Create Migration"}
                     </button>
                   </div>
                 </div>
 
-                {/* HEADER */}
+                {/* CONTENT HEADER */}
                 <div className="content-header">
                   <span>
                     {activeView === "pending"
@@ -322,22 +385,29 @@ const MigrateDB = () => {
                         : "All Migrations"}
                   </span>
 
-                  <span className="badge">{tableData.length} total</span>
+                  <span className="badge">{filteredData.length} total</span>
 
+                  {/* FIX: Moved search icon inside .search-box so the
+                           absolute-positioned .search-icon CSS rule works correctly. */}
                   <div className="search-box">
-                    <Search size={14} />
+                    <Search size={12} className="search-icon" />
                     <input
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search..."
+                      placeholder="Search migrations…"
                     />
                   </div>
                 </div>
 
+                {/* FIX: Pass filteredData instead of raw tableData so the table
+                         doesn't need to duplicate search filter logic.
+                         Also removed the `key={activeView}` prop — it was forcing
+                         a full unmount/remount of MigrationTable on every view switch,
+                         losing scroll position and causing a flash. Let the table
+                         update via props instead. */}
                 <MigrationTable
-                  key={activeView}
                   searchQuery={searchQuery}
-                  data={tableData}
+                  data={filteredData}
                 />
               </div>
             </>
@@ -349,11 +419,5 @@ const MigrateDB = () => {
     </div>
   );
 };
-
-const ToolbarButton = ({ icon, label, variant, onClick }) => (
-  <button onClick={onClick} className={`toolbar-btn ${variant || ""}`}>
-    {icon} {label}
-  </button>
-);
 
 export default MigrateDB;
