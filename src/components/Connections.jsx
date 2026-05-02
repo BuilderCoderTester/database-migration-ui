@@ -72,11 +72,11 @@ const Connections = () => {
   //      first error string, so every invalid field can be flagged at once.
   const validate = () => {
     const errors = {};
-    if (!form.name.trim())     errors.name     = "Name is required";
-    if (!form.host.trim())     errors.host     = "Host is required";
-    if (!form.port)            errors.port     = "Port is required";
+    if (!form.name.trim()) errors.name = "Name is required";
+    if (!form.host.trim()) errors.host = "Host is required";
+    if (!form.port) errors.port = "Port is required";
     if (Number(form.port) < 1 || Number(form.port) > 65535)
-                               errors.port     = "Port must be 1–65535";
+      errors.port = "Port must be 1–65535";
     if (!form.database.trim()) errors.database = "Database is required";
     if (!form.username.trim()) errors.username = "Username is required";
     return errors;
@@ -159,46 +159,42 @@ const Connections = () => {
 
   // ─── SET ACTIVE + CONNECT ─────────────────────────────────────────────
   const setActive = async (conn) => {
-    // FIX: Prevent re-connecting to the already-active connection.
-    if (conn.id === activeId) return;
-
-    try {
-      const res = await fetch(`${API}/connect`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(conn),
-      });
-
-      if (!res.ok) throw new Error(`Server error: ${res.status}`);
-
-      const data = await res.json();
-
-      if (!data.success) {
-        alert("❌ " + (data.message || "Connection failed"));
-        return;
-      }
-
-      setActiveId(conn.id);
-
+      if (conn.id === activeId) return;
+      console.log(conn.database);
       try {
-        localStorage.setItem("activeConnection", conn.id);
-      } catch (storageErr) {
-        console.error("Failed to persist active connection:", storageErr);
-      }
+        const res = await fetch(`${API}/set-active`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            database: conn.database, // 🔥 ONLY SEND THIS
+          }),
+        });
 
-      // FIX: Replaced alert() with console — UX should reflect active state
-      //      visually (the .active CSS class) rather than blocking with a popup.
-      console.info("Active connection set:", conn.name);
-    } catch (err) {
-      alert("Connection error: " + err.message);
-    }
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+
+        const data = await res.json();
+
+        if (!data.success) {
+          alert("❌ " + (data.message || "Failed"));
+          return;
+        }
+
+        setActiveId(data.data); // 🔥 backend returns connectionId
+
+        localStorage.setItem("activeConnection", data.data);
+
+        console.info("Active connection set:", conn.database);
+      } catch (err) {
+        alert("Error: " + err.message);
+      }
   };
 
   // ─── DELETE ───────────────────────────────────────────────────────────
   // FIX: Added a confirmation prompt before deleting — destructive actions
   //      should always require confirmation.
   const deleteConnection = (id) => {
-    if (!window.confirm("Delete this connection? This cannot be undone.")) return;
+    if (!window.confirm("Delete this connection? This cannot be undone."))
+      return;
 
     const updated = connections.filter((c) => c.id !== id);
     setConnections(updated);
@@ -232,7 +228,9 @@ const Connections = () => {
       {connections.length === 0 ? (
         <div className="empty-state">
           <p>No connections yet.</p>
-          <p>Click <strong>+ Add Connection</strong> to get started.</p>
+          <p>
+            Click <strong>+ Add Connection</strong> to get started.
+          </p>
         </div>
       ) : (
         <div className="connections-list">
@@ -262,7 +260,11 @@ const Connections = () => {
                   onClick={() => setActive(conn)}
                   // FIX: Disable "Set Active" when this is already the active connection.
                   disabled={activeId === conn.id}
-                  style={activeId === conn.id ? { opacity: 0.6, cursor: "default" } : {}}
+                  style={
+                    activeId === conn.id
+                      ? { opacity: 0.6, cursor: "default" }
+                      : {}
+                  }
                 >
                   {activeId === conn.id ? "✓ Active" : "Set Active"}
                 </button>
@@ -364,13 +366,15 @@ const FormField = ({ placeholder, type = "text", value, onChange, error }) => (
       style={error ? { borderColor: "var(--red)" } : {}}
     />
     {error && (
-      <p style={{
-        fontSize: 10,
-        color: "var(--red)",
-        fontFamily: "var(--mono)",
-        marginTop: 2,
-        marginBottom: 4,
-      }}>
+      <p
+        style={{
+          fontSize: 10,
+          color: "var(--red)",
+          fontFamily: "var(--mono)",
+          marginTop: 2,
+          marginBottom: 4,
+        }}
+      >
         {error}
       </p>
     )}

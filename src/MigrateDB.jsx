@@ -64,16 +64,28 @@ const MigrateDB = () => {
   //      in useEffect without causing infinite re-render loops.
   const loadData = useCallback(async () => {
     try {
+      const res = await fetch(`${API}/get-connection`, {
+        method: "GET",
+      });
+
+      const data = await res.json(); // 🔥 IMPORTANT
+
+      const connectionId = data; // assuming ApiResponse
+
+      console.log("connection_id:", connectionId);
+
       const [historyRes, pendingRes] = await Promise.all([
-        fetch(`${API}/history`),
-        fetch(`${API}/pending`),
+        fetch(`${API}/history?connectionId=${connectionId}`),
+        fetch(`${API}/pending?connectionId=${connectionId}`),
       ]);
 
       // FIX: Added response.ok checks before parsing JSON.
       //      Without this, a non-2xx response (e.g. 500) would try to parse
       //      an error body as JSON and silently corrupt state.
-      if (!historyRes.ok) throw new Error(`History fetch failed: ${historyRes.status}`);
-      if (!pendingRes.ok) throw new Error(`Pending fetch failed: ${pendingRes.status}`);
+      if (!historyRes.ok)
+        throw new Error(`History fetch failed: ${historyRes.status}`);
+      if (!pendingRes.ok)
+        throw new Error(`Pending fetch failed: ${pendingRes.status}`);
 
       const historyData = await historyRes.json();
       const pendingData = await pendingRes.json();
@@ -89,11 +101,31 @@ const MigrateDB = () => {
       const total = applied + pending;
 
       setStats([
-        { label: "Total",        value: total,   sub: "migrations found",    color: "stat-blue"    },
-        { label: "Applied",      value: applied,  sub: "successfully run",    color: "stat-green"   },
-        { label: "Pending",      value: pending,  sub: "awaiting execution",  color: "stat-amber"   },
-        { label: "Failed",       value: failed,   sub: "errors",             color: "stat-red"     },
-        { label: "Avg Duration", value: "—",      sub: "per migration",      color: "stat-neutral" },
+        {
+          label: "Total",
+          value: total,
+          sub: "migrations found",
+          color: "stat-blue",
+        },
+        {
+          label: "Applied",
+          value: applied,
+          sub: "successfully run",
+          color: "stat-green",
+        },
+        {
+          label: "Pending",
+          value: pending,
+          sub: "awaiting execution",
+          color: "stat-amber",
+        },
+        { label: "Failed", value: failed, sub: "errors", color: "stat-red" },
+        {
+          label: "Avg Duration",
+          value: "—",
+          sub: "per migration",
+          color: "stat-neutral",
+        },
       ]);
     } catch (err) {
       console.error("Failed to load data:", err);
@@ -109,8 +141,18 @@ const MigrateDB = () => {
     // FIX: Guard against double-clicks while already loading.
     if (loading) return;
     try {
+      const resp = await fetch(`${API}/get-connection`, {
+        method: "GET",
+      });
+
+      const data = await resp.json(); // 🔥 IMPORTANT
+
+      const connectionId = data; // assuming ApiResponse
+
+      console.log("connection_id:", connectionId);
+
       setLoading(true);
-      const res = await fetch(`${API}/migrate`, { method: "POST" });
+      const res = await fetch(`${API}/migrate?connectionId=${connectionId}`, { method: "POST" });
       // FIX: Check response before reloading data.
       if (!res.ok) throw new Error(`Migrate failed: ${res.status}`);
       await loadData();
@@ -160,10 +202,10 @@ const MigrateDB = () => {
     // FIX: Collect all validation errors before alerting so the user sees
     //      all problems at once instead of one per click.
     const errors = [];
-    if (!migrationName.trim())    errors.push("Migration name is required");
+    if (!migrationName.trim()) errors.push("Migration name is required");
     if (!migrationVersion.trim()) errors.push("Version is required");
-    if (!upSql.trim())            errors.push("UP SQL is required");
-    if (!downSql.trim())          errors.push("DOWN SQL is required");
+    if (!upSql.trim()) errors.push("UP SQL is required");
+    if (!downSql.trim()) errors.push("DOWN SQL is required");
     if (errors.length > 0) {
       alert(errors.join("\n"));
       return;
@@ -173,9 +215,9 @@ const MigrateDB = () => {
       setCreating(true);
 
       const params = new URLSearchParams();
-      params.append("version",     migrationVersion);
+      params.append("version", migrationVersion);
       params.append("description", migrationName);
-      params.append("migrateUp",   upSql);
+      params.append("migrateUp", upSql);
       params.append("migrateDown", downSql);
 
       const res = await fetch(`${API}/create`, {
@@ -207,7 +249,7 @@ const MigrateDB = () => {
   //      consistent shape — prevents undefined-access errors in the table.
   const normalizedPending = pendingList.map((m) => ({
     ...m,
-    success: null,   // FIX: use null (not false) to distinguish "not yet run"
+    success: null, // FIX: use null (not false) to distinguish "not yet run"
     appliedOn: null, //      from a genuine failure (success === false).
     duration: null,
   }));
@@ -313,8 +355,12 @@ const MigrateDB = () => {
                 {/* CREATE PANEL */}
                 {/* FIX: Render panel always (for CSS transition) but control
                          visibility via className — avoids mount/unmount flash. */}
-                <div className={`create-panel${showCreatePanel ? " open" : ""}`}>
-                  <h3 style={{ marginBottom: 12, fontSize: 14, fontWeight: 600 }}>
+                <div
+                  className={`create-panel${showCreatePanel ? " open" : ""}`}
+                >
+                  <h3
+                    style={{ marginBottom: 12, fontSize: 14, fontWeight: 600 }}
+                  >
                     Create New Migration
                   </h3>
 
@@ -334,7 +380,17 @@ const MigrateDB = () => {
 
                   <div className="editor-container">
                     {/* FIX: Added aria-label for accessibility */}
-                    <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.7px", color: "var(--text3)", marginBottom: 6, fontFamily: "var(--mono)" }}>
+                    <p
+                      style={{
+                        fontSize: 10,
+                        fontWeight: 600,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.7px",
+                        color: "var(--text3)",
+                        marginBottom: 6,
+                        fontFamily: "var(--mono)",
+                      }}
+                    >
                       UP Migration
                     </p>
                     <Editor
@@ -345,7 +401,17 @@ const MigrateDB = () => {
                       onChange={(v) => setUpSql(v || "")}
                       options={{ minimap: { enabled: false }, fontSize: 12 }}
                     />
-                    <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.7px", color: "var(--text3)", margin: "12px 0 6px", fontFamily: "var(--mono)" }}>
+                    <p
+                      style={{
+                        fontSize: 10,
+                        fontWeight: 600,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.7px",
+                        color: "var(--text3)",
+                        margin: "12px 0 6px",
+                        fontFamily: "var(--mono)",
+                      }}
+                    >
                       DOWN Migration (Rollback)
                     </p>
                     <Editor
@@ -405,10 +471,7 @@ const MigrateDB = () => {
                          a full unmount/remount of MigrationTable on every view switch,
                          losing scroll position and causing a flash. Let the table
                          update via props instead. */}
-                <MigrationTable
-                  searchQuery={searchQuery}
-                  data={filteredData}
-                />
+                <MigrationTable searchQuery={searchQuery} data={filteredData} />
               </div>
             </>
           )}
