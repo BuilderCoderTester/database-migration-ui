@@ -165,7 +165,17 @@ const MigrateDB = () => {
 
   const handleRollback = async () => {
     try {
-      const res = await fetch(`${API}/rollback`, { method: "POST" });
+       const resp = await fetch(`${API}/get-connection`, {
+        method: "GET",
+      });
+
+      const data = await resp.json(); // 🔥 IMPORTANT
+
+      const connectionId = data; // assuming ApiResponse
+
+      console.log("connection_id:", connectionId);
+      const res = await fetch(`${API}/rollback?connectionId=${connectionId}`, { method: "POST" });
+      console.log(res)
       if (!res.ok) throw new Error(`Rollback failed: ${res.status}`);
       await loadData();
     } catch (err) {
