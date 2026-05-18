@@ -2,7 +2,7 @@
   "name": "migratedb",
   "private": true,
   "version": "1.0.0",
-  "main": "electron/main.cjs",
+  "main": "main.cjs",
   "type": "module",
   "scripts": {
     "dev": "vite",

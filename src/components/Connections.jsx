@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 
-const API = "http://localhost:8080/api/migrations";
+const API = "http://localhost:8081/api/migrations";
 
 const EMPTY_FORM = {
   name: "",

@@ -18,7 +18,7 @@ import ActivityLog from "./components/ActivityLog";
 import Connections from "./components/Connections";
 import Editor from "@monaco-editor/react";
 
-const API = "http://localhost:8080/api/migrations";
+const API = "http://localhost:8081/api/migrations";
 
 // ─── TOOLBAR BUTTON ─────────────────────────────────────────────────────────
 // FIX: Extracted to its own named component outside MigrateDB to prevent
@@ -88,7 +88,9 @@ const MigrateDB = () => {
         throw new Error(`Pending fetch failed: ${pendingRes.status}`);
 
       const historyData = await historyRes.json();
+      console.log("historyData:", historyData);
       const pendingData = await pendingRes.json();
+      console.log("pendingData:", pendingData);
 
       setHistory(historyData);
       setPendingList(pendingData);

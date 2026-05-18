@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../MigrateDB.css";
 
-const API = "http://localhost:8080/api/migrations";
+const API = "http://localhost:8081/api/migrations";
 
 const ActivityLog = () => {
   const [dbInfo, setDbInfo] = useState(null);
