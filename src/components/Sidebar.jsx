@@ -5,11 +5,19 @@ import {
   CheckCircle2,
   Settings,
   Activity,
-} from "lucide-react";
+  Table2,
+} from "lucide-react"; 
 import React from "react";
 import "../MigrateDB.css";
 
-const Sidebar = ({ onPendingClick, onAllClick, onAppliedClick,onConnectionsClick, active }) => (
+const Sidebar = ({
+  onPendingClick,
+  onAllClick,
+  onAppliedClick,
+  onConnectionsClick,
+  onTablesClick,
+  active,
+}) => (
   <aside className="sidebar">
     <div className="sidebar-section-title">Views</div>
 
@@ -45,6 +53,12 @@ const Sidebar = ({ onPendingClick, onAllClick, onAppliedClick,onConnectionsClick
       active={active === "Connections"}
       onClick={onConnectionsClick}
     />
+    <SidebarItem
+  icon={<Table2 size={15} />}
+  label="Tables"
+  active={active === "tables"}
+  onClick={onTablesClick}
+/>
     <SidebarItem icon={<Settings size={15} />} label="Settings" />
   </aside>
 );

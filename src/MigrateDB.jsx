@@ -1,4 +1,9 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
+
 import {
   Search,
   Plus,
@@ -16,474 +21,1010 @@ import StatCard from "./components/StatCard";
 import MigrationTable from "./components/MigrationTable";
 import ActivityLog from "./components/ActivityLog";
 import Connections from "./components/Connections";
+
 import Editor from "@monaco-editor/react";
 
-const API = "http://localhost:8081/api/migrations";
+const API =
+  "http://localhost:8081/api/migrations";
 
-// ─── TOOLBAR BUTTON ─────────────────────────────────────────────────────────
-// FIX: Extracted to its own named component outside MigrateDB to prevent
-//      it from being re-created on every render, avoiding focus loss bugs.
-const ToolbarButton = ({ icon, label, variant, onClick, disabled }) => (
+// =====================================================
+// SAFE JSON
+// =====================================================
+
+const safeJson = async (response) => {
+
+  try {
+
+    const text = await response.text();
+
+    if (!text || text.trim() === "") {
+      return [];
+    }
+
+    return JSON.parse(text);
+
+  } catch (err) {
+
+    console.error(
+      "JSON Parse Error:",
+      err
+    );
+
+    return [];
+  }
+};
+
+// =====================================================
+// TOOLBAR BUTTON
+// =====================================================
+
+const ToolbarButton = ({
+  icon,
+  label,
+  variant,
+  onClick,
+  disabled,
+}) => (
+
   <button
     onClick={onClick}
     disabled={disabled}
-    className={`toolbar-btn${variant ? ` ${variant}` : ""}`}
+    className={`toolbar-btn${
+      variant ? ` ${variant}` : ""
+    }`}
   >
     {icon}
     {label}
   </button>
 );
 
-// ─── MAIN COMPONENT ─────────────────────────────────────────────────────────
+// =====================================================
+// MAIN COMPONENT
+// =====================================================
+
 const MigrateDB = () => {
-  const [activeTab, setActiveTab] = useState("Migrations");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [stats, setStats] = useState([]);
-  const [history, setHistory] = useState([]);
-  const [pendingList, setPendingList] = useState([]);
 
-  const [loading, setLoading] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const [activeTab, setActiveTab] =
+    useState("Migrations");
 
-  const [showCreatePanel, setShowCreatePanel] = useState(false);
-  const [activeView, setActiveView] = useState("all");
+  const [searchQuery, setSearchQuery] =
+    useState("");
 
-  const [upSql, setUpSql] = useState("-- Write your UP SQL here\n");
-  const [downSql, setDownSql] = useState("-- Write your DOWN SQL here\n");
+  const [stats, setStats] =
+    useState([]);
 
-  const [migrationName, setMigrationName] = useState("");
-  const [migrationVersion, setMigrationVersion] = useState("");
+  const [history, setHistory] =
+    useState([]);
 
-  const [creating, setCreating] = useState(false);
+  const [pendingList, setPendingList] =
+    useState([]);
 
-  // FIX: Removed unused state `showPendingPanel` — was declared but never used,
-  //      causing a stale state variable that could confuse future maintainers.
+  const [tables, setTables] =
+    useState([]);
 
-  // ─── LOAD DATA ──────────────────────────────────────────────────────────
-  // FIX: Wrapped in useCallback so it can be safely listed as a dependency
-  //      in useEffect without causing infinite re-render loops.
-  const loadData = useCallback(async () => {
+  const [selectedTable, setSelectedTable] =
+    useState(null);
+
+  const [tableData, setTableData] =
+    useState([]);
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const [darkMode, setDarkMode] =
+    useState(false);
+
+  const [showCreatePanel, setShowCreatePanel] =
+    useState(false);
+
+  const [activeView, setActiveView] =
+    useState("all");
+
+  const [upSql, setUpSql] =
+    useState(
+      "-- Write your UP SQL here\n"
+    );
+
+  const [downSql, setDownSql] =
+    useState(
+      "-- Write your DOWN SQL here\n"
+    );
+
+  const [migrationName, setMigrationName] =
+    useState("");
+
+  const [migrationVersion, setMigrationVersion] =
+    useState("");
+
+  const [creating, setCreating] =
+    useState(false);
+
+  // =====================================================
+  // LOAD DATA
+  // =====================================================
+
+  const loadData = useCallback(
+    async () => {
+
+      try {
+
+        const res = await fetch(
+          `${API}/get-connection`
+        );
+
+        const connectionId =
+          await safeJson(res);
+
+        const [historyRes, pendingRes] =
+          await Promise.all([
+            fetch(
+              `${API}/history?connectionId=${connectionId}`
+            ),
+
+            fetch(
+              `${API}/pending?connectionId=${connectionId}`
+            ),
+          ]);
+
+        const historyData =
+          await safeJson(historyRes);
+
+        const pendingData =
+          await safeJson(pendingRes);
+
+        const safeHistory =
+          Array.isArray(historyData)
+            ? historyData
+            : [];
+
+        const safePending =
+          Array.isArray(pendingData)
+            ? pendingData
+            : [];
+
+        setHistory(safeHistory);
+
+        setPendingList(safePending);
+
+        const applied =
+          safeHistory.length;
+
+        const failed =
+          safeHistory.filter(
+            (m) => m.success === false
+          ).length;
+
+        const pending =
+          safePending.length;
+
+        const total =
+          applied + pending;
+
+        setStats([
+          {
+            label: "Total",
+            value: total,
+            sub: "migrations found",
+            color: "stat-blue",
+          },
+
+          {
+            label: "Applied",
+            value: applied,
+            sub: "successfully run",
+            color: "stat-green",
+          },
+
+          {
+            label: "Pending",
+            value: pending,
+            sub: "awaiting execution",
+            color: "stat-amber",
+          },
+
+          {
+            label: "Failed",
+            value: failed,
+            sub: "errors",
+            color: "stat-red",
+          },
+        ]);
+
+      } catch (err) {
+
+        console.error(err);
+
+        setHistory([]);
+        setPendingList([]);
+      }
+    },
+    []
+  );
+
+  // =====================================================
+  // LOAD TABLES
+  // =====================================================
+
+  const loadTables = async () => {
+
     try {
-      const res = await fetch(`${API}/get-connection`, {
-        method: "GET",
-      });
 
-      const data = await res.json(); // 🔥 IMPORTANT
+      const res = await fetch(
+        `${API}/tables`
+      );
 
-      const connectionId = data; // assuming ApiResponse
+      const data =
+        await safeJson(res);
 
-      console.log("connection_id:", connectionId);
+      setTables(
+        Array.isArray(data)
+          ? data
+          : []
+      );
 
-      const [historyRes, pendingRes] = await Promise.all([
-        fetch(`${API}/history?connectionId=${connectionId}`),
-        fetch(`${API}/pending?connectionId=${connectionId}`),
-      ]);
-
-      // FIX: Added response.ok checks before parsing JSON.
-      //      Without this, a non-2xx response (e.g. 500) would try to parse
-      //      an error body as JSON and silently corrupt state.
-      if (!historyRes.ok)
-        throw new Error(`History fetch failed: ${historyRes.status}`);
-      if (!pendingRes.ok)
-        throw new Error(`Pending fetch failed: ${pendingRes.status}`);
-
-      const historyData = await historyRes.json();
-      console.log("historyData:", historyData);
-      const pendingData = await pendingRes.json();
-      console.log("pendingData:", pendingData);
-
-      setHistory(historyData);
-      setPendingList(pendingData);
-
-      const applied = historyData.length;
-      // FIX: Was filtering on m.success, but pending items also have success:false
-      //      after normalization. Filter only within historyData to count real failures.
-      const failed = historyData.filter((m) => m.success === false).length;
-      const pending = pendingData.length;
-      const total = applied + pending;
-
-      setStats([
-        {
-          label: "Total",
-          value: total,
-          sub: "migrations found",
-          color: "stat-blue",
-        },
-        {
-          label: "Applied",
-          value: applied,
-          sub: "successfully run",
-          color: "stat-green",
-        },
-        {
-          label: "Pending",
-          value: pending,
-          sub: "awaiting execution",
-          color: "stat-amber",
-        },
-        { label: "Failed", value: failed, sub: "errors", color: "stat-red" },
-        {
-          label: "Avg Duration",
-          value: "—",
-          sub: "per migration",
-          color: "stat-neutral",
-        },
-      ]);
     } catch (err) {
-      console.error("Failed to load data:", err);
+
+      console.error(err);
+
+      setTables([]);
     }
-  }, []); // no external deps — API is module-level constant
+  };
+
+  // =====================================================
+  // LOAD TABLE DATA
+  // =====================================================
+
+  const loadTableData = async (
+    tableName
+  ) => {
+
+    try {
+
+      setSelectedTable(tableName);
+
+      const res = await fetch(
+        `${API}/table-data/${tableName}`
+      );
+
+      const data =
+        await safeJson(res);
+
+      setTableData(
+        Array.isArray(data)
+          ? data
+          : []
+      );
+
+    } catch (err) {
+
+      console.error(err);
+
+      setTableData([]);
+    }
+  };
+
+  // =====================================================
+  // INITIAL LOAD
+  // =====================================================
 
   useEffect(() => {
+
     loadData();
+    loadTables();
+
   }, [loadData]);
 
-  // ─── ACTIONS ────────────────────────────────────────────────────────────
+  // =====================================================
+  // MIGRATE
+  // =====================================================
+
   const handleMigrate = async () => {
-    // FIX: Guard against double-clicks while already loading.
-    if (loading) return;
+
     try {
-      const resp = await fetch(`${API}/get-connection`, {
-        method: "GET",
-      });
 
-      const data = await resp.json(); // 🔥 IMPORTANT
+      const resp = await fetch(
+        `${API}/get-connection`
+      );
 
-      const connectionId = data; // assuming ApiResponse
-
-      console.log("connection_id:", connectionId);
+      const connectionId =
+        await safeJson(resp);
 
       setLoading(true);
-      const res = await fetch(`${API}/migrate?connectionId=${connectionId}`, { method: "POST" });
-      // FIX: Check response before reloading data.
-      if (!res.ok) throw new Error(`Migrate failed: ${res.status}`);
+
+      await fetch(
+        `${API}/migrate?connectionId=${connectionId}`,
+        {
+          method: "POST",
+        }
+      );
+
       await loadData();
+      await loadTables();
+
     } catch (err) {
+
       console.error(err);
+
     } finally {
+
       setLoading(false);
     }
   };
 
+  // =====================================================
+  // ROLLBACK
+  // =====================================================
+
   const handleRollback = async () => {
+
     try {
-       const resp = await fetch(`${API}/get-connection`, {
-        method: "GET",
-      });
 
-      const data = await resp.json(); // 🔥 IMPORTANT
+      const resp = await fetch(
+        `${API}/get-connection`
+      );
 
-      const connectionId = data; // assuming ApiResponse
+      const connectionId =
+        await safeJson(resp);
 
-      console.log("connection_id:", connectionId);
-      const res = await fetch(`${API}/rollback?connectionId=${connectionId}`, { method: "POST" });
-      console.log(res)
-      if (!res.ok) throw new Error(`Rollback failed: ${res.status}`);
+      await fetch(
+        `${API}/rollback?connectionId=${connectionId}`,
+        {
+          method: "POST",
+        }
+      );
+
       await loadData();
+      await loadTables();
+
     } catch (err) {
+
       console.error(err);
     }
   };
+
+  // =====================================================
+  // VALIDATE
+  // =====================================================
 
   const handleValidate = async () => {
+
     try {
-      const res = await fetch(`${API}/validate`, { method: "POST" });
-      // FIX: Was silently ignoring the response; log the result.
-      if (!res.ok) throw new Error(`Validate failed: ${res.status}`);
+
+      await fetch(
+        `${API}/validate`,
+        {
+          method: "POST",
+        }
+      );
+
     } catch (err) {
+
       console.error(err);
     }
   };
+
+  // =====================================================
+  // REPAIR
+  // =====================================================
 
   const handleRepair = async () => {
+
     try {
-      const res = await fetch(`${API}/repair`, { method: "POST" });
-      if (!res.ok) throw new Error(`Repair failed: ${res.status}`);
+
+      await fetch(
+        `${API}/repair`,
+        {
+          method: "POST",
+        }
+      );
+
       await loadData();
+
     } catch (err) {
+
       console.error(err);
     }
   };
 
-  const toggleCreatePanel = () => setShowCreatePanel((prev) => !prev);
+  // =====================================================
+  // CREATE MIGRATION
+  // =====================================================
 
-  // ─── CREATE MIGRATION ───────────────────────────────────────────────────
   const createMigration = async () => {
-    if (creating) return;
 
-    // FIX: Collect all validation errors before alerting so the user sees
-    //      all problems at once instead of one per click.
-    const errors = [];
-    if (!migrationName.trim()) errors.push("Migration name is required");
-    if (!migrationVersion.trim()) errors.push("Version is required");
-    if (!upSql.trim()) errors.push("UP SQL is required");
-    if (!downSql.trim()) errors.push("DOWN SQL is required");
-    if (errors.length > 0) {
-      alert(errors.join("\n"));
+    if (
+      !migrationName ||
+      !migrationVersion
+    ) {
+
+      alert(
+        "Please fill all fields"
+      );
+
       return;
     }
 
     try {
+
       setCreating(true);
 
-      const params = new URLSearchParams();
-      params.append("version", migrationVersion);
-      params.append("description", migrationName);
-      params.append("migrateUp", upSql);
-      params.append("migrateDown", downSql);
+      const params =
+        new URLSearchParams();
 
-      const res = await fetch(`${API}/create`, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: params.toString(),
-      });
+      params.append(
+        "version",
+        migrationVersion
+      );
 
-      if (!res.ok) throw new Error(`Create failed: ${res.status}`);
+      params.append(
+        "description",
+        migrationName
+      );
+
+      params.append(
+        "migrateUp",
+        upSql
+      );
+
+      params.append(
+        "migrateDown",
+        downSql
+      );
+
+      await fetch(
+        `${API}/create`,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/x-www-form-urlencoded",
+          },
+
+          body: params.toString(),
+        }
+      );
 
       await loadData();
 
-      // Reset form
       setMigrationName("");
       setMigrationVersion("");
-      setUpSql("-- Write your UP SQL here\n");
-      setDownSql("-- Write your DOWN SQL here\n");
+
+      setUpSql(
+        "-- Write your UP SQL here\n"
+      );
+
+      setDownSql(
+        "-- Write your DOWN SQL here\n"
+      );
+
       setShowCreatePanel(false);
+
     } catch (err) {
+
       console.error(err);
-      alert("Failed to create migration");
+
     } finally {
+
       setCreating(false);
     }
   };
 
-  // ─── TABLE DATA ─────────────────────────────────────────────────────────
-  // FIX: Normalize pending items so MigrationTable always receives a
-  //      consistent shape — prevents undefined-access errors in the table.
-  const normalizedPending = pendingList.map((m) => ({
-    ...m,
-    success: null, // FIX: use null (not false) to distinguish "not yet run"
-    appliedOn: null, //      from a genuine failure (success === false).
-    duration: null,
-  }));
+  // =====================================================
+  // FILTER DATA
+  // =====================================================
 
-  const tableData =
+  const normalizedPending =
+    (
+      Array.isArray(pendingList)
+        ? pendingList
+        : []
+    ).map((m) => ({
+      ...m,
+      success: null,
+      appliedOn: null,
+      duration: null,
+    }));
+
+  const migrationData =
     activeView === "pending"
       ? normalizedPending
       : activeView === "applied"
-        ? history
-        : [...normalizedPending, ...history];
+      ? (
+          Array.isArray(history)
+            ? history
+            : []
+        )
+      : [
+          ...normalizedPending,
+          ...(
+            Array.isArray(history)
+              ? history
+              : []
+          ),
+        ];
 
-  // FIX: Derive filtered data here so MigrationTable doesn't need to own
-  //      search logic — single source of truth.
-  const filteredData = tableData.filter((m) => {
-    if (!searchQuery.trim()) return true;
-    const q = searchQuery.toLowerCase();
-    return (
-      m.description?.toLowerCase().includes(q) ||
-      String(m.version)?.toLowerCase().includes(q)
-    );
-  });
+  const filteredData =
+    (
+      Array.isArray(migrationData)
+        ? migrationData
+        : []
+    ).filter((m) => {
 
-  // ─── RENDER ─────────────────────────────────────────────────────────────
+      if (!searchQuery.trim()) {
+        return true;
+      }
+
+      const q =
+        searchQuery.toLowerCase();
+
+      return (
+        m.description
+          ?.toLowerCase()
+          .includes(q) ||
+
+        String(m.version)
+          ?.toLowerCase()
+          .includes(q)
+      );
+    });
+
+  // =====================================================
+  // RENDER
+  // =====================================================
+
   return (
-    <div className={`migrate-container${darkMode ? " dark" : ""}`}>
+
+    <div
+      className={`migrate-container${
+        darkMode ? " dark" : ""
+      }`}
+    >
+
       <TopNav
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         darkMode={darkMode}
-        onToggleTheme={() => setDarkMode((prev) => !prev)}
+        onToggleTheme={() =>
+          setDarkMode(
+            (prev) => !prev
+          )
+        }
       />
 
       <div className="layout">
+
         <Sidebar
           active={activeView}
-          onAllClick={() => setActiveView("all")}
-          onPendingClick={() => setActiveView("pending")}
-          onAppliedClick={() => setActiveView("applied")}
-          onConnectionsClick={() => setActiveView("connections")}
-          pendingCount={pendingList.length}
+
+          onAllClick={() =>
+            setActiveView("all")
+          }
+
+          onPendingClick={() =>
+            setActiveView("pending")
+          }
+
+          onAppliedClick={() =>
+            setActiveView("applied")
+          }
+
+          onConnectionsClick={() =>
+            setActiveView("connections")
+          }
+
+          onTablesClick={() =>
+            setActiveView("tables")
+          }
         />
 
         <main className="main-content">
-          {/* ── TOOLBAR (hidden on Connections view) ── */}
-          {activeView !== "connections" && (
-            <div className="topnav">
-              <span className="toolbar-title">
-                {activeView === "pending"
-                  ? "Pending Migrations"
-                  : activeView === "applied"
-                    ? "Applied Migrations"
-                    : "All Migrations"}
-              </span>
 
-              <ToolbarButton
-                icon={<Plus size={14} />}
-                label="New Migration"
-                onClick={toggleCreatePanel}
-              />
-              <ToolbarButton
-                icon={<ShieldCheck size={14} />}
-                label="Validate"
-                onClick={handleValidate}
-              />
-              <ToolbarButton
-                icon={<RotateCcw size={14} />}
-                label="Rollback"
-                variant="red"
-                onClick={handleRollback}
-              />
+          {/* CONNECTIONS */}
 
-              <div className="spacer" />
-
-              <ToolbarButton
-                icon={<Wrench size={14} />}
-                label="Repair"
-                variant="green"
-                onClick={handleRepair}
-              />
-              <ToolbarButton
-                icon={<ArrowDownToLine size={14} />}
-                label={loading ? "Migrating…" : "Migrate Now"}
-                variant="blue"
-                onClick={handleMigrate}
-                disabled={loading}
-              />
-            </div>
-          )}
-
-          {/* ── MAIN VIEW SWITCH ── */}
-          {activeView === "connections" ? (
+          {
+            activeView === "connections"
+          ? (
             <Connections />
-          ) : (
-            <>
-              {/* STATS */}
-              <div className="stats-grid">
-                {stats.map((stat, i) => (
-                  <StatCard key={i} {...stat} />
-                ))}
+          ) : activeView === "tables"
+          ? (
+
+            // TABLES VIEW
+
+            <div className="tables-layout">
+
+              <div className="tables-sidebar">
+
+                <h3>
+                  Database Tables
+                </h3>
+
+                {
+                  (
+                    Array.isArray(tables)
+                      ? tables
+                      : []
+                  ).map(
+                    (table, index) => (
+
+                    <button
+                      key={index}
+
+                      className={`table-item ${
+                        selectedTable === table
+                          ? "active"
+                          : ""
+                      }`}
+
+                      onClick={() =>
+                        loadTableData(table)
+                      }
+                    >
+                      {table}
+                    </button>
+                  ))
+                }
               </div>
 
+              <div className="tables-content">
+
+                <h2>
+                  {
+                    selectedTable ||
+                    "Select Table"
+                  }
+                </h2>
+
+                {
+                  Array.isArray(tableData)
+                  &&
+                  tableData.length > 0
+                ? (
+
+                  <div className="table-container">
+
+                    <table className="migration-table">
+
+                      <thead>
+                        <tr>
+                          {
+                            Object.keys(
+                              tableData[0]
+                            ).map((col) => (
+
+                              <th key={col}>
+                                {col}
+                              </th>
+                            ))
+                          }
+                        </tr>
+                      </thead>
+
+                      <tbody>
+
+                        {
+                          tableData.map(
+                            (
+                              row,
+                              rowIndex
+                            ) => (
+
+                            <tr key={rowIndex}>
+
+                              {
+                                Object.values(
+                                  row
+                                ).map(
+                                  (
+                                    value,
+                                    colIndex
+                                  ) => (
+
+                                  <td
+                                    key={colIndex}
+                                  >
+                                    {
+                                      String(
+                                        value
+                                      )
+                                    }
+                                  </td>
+                                ))
+                              }
+                            </tr>
+                          ))
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+
+                ) : (
+
+                  <p>
+                    No data available
+                  </p>
+                )}
+              </div>
+            </div>
+
+          ) : (
+
+            <>
+              {/* TOOLBAR */}
+
+              <div className="topnav">
+
+                <span className="toolbar-title">
+
+                  {
+                    activeView === "pending"
+                    ? "Pending Migrations"
+                    : activeView === "applied"
+                    ? "Applied Migrations"
+                    : "All Migrations"
+                  }
+                </span>
+
+                <ToolbarButton
+                  icon={<Plus size={14} />}
+                  label="New Migration"
+
+                  onClick={() =>
+                    setShowCreatePanel(
+                      !showCreatePanel
+                    )
+                  }
+                />
+
+                <ToolbarButton
+                  icon={
+                    <ShieldCheck
+                      size={14}
+                    />
+                  }
+
+                  label="Validate"
+
+                  onClick={
+                    handleValidate
+                  }
+                />
+
+                <ToolbarButton
+                  icon={
+                    <RotateCcw
+                      size={14}
+                    />
+                  }
+
+                  label="Rollback"
+
+                  variant="red"
+
+                  onClick={
+                    handleRollback
+                  }
+                />
+
+                <div className="spacer" />
+
+                <ToolbarButton
+                  icon={
+                    <Wrench size={14} />
+                  }
+
+                  label="Repair"
+
+                  variant="green"
+
+                  onClick={
+                    handleRepair
+                  }
+                />
+
+                <ToolbarButton
+                  icon={
+                    <ArrowDownToLine
+                      size={14}
+                    />
+                  }
+
+                  label={
+                    loading
+                      ? "Migrating..."
+                      : "Migrate Now"
+                  }
+
+                  variant="blue"
+
+                  onClick={
+                    handleMigrate
+                  }
+
+                  disabled={loading}
+                />
+              </div>
+
+              {/* STATS */}
+
+              <div className="stats-grid">
+
+                {
+                  stats.map(
+                    (stat, i) => (
+
+                    <StatCard
+                      key={i}
+                      {...stat}
+                    />
+                  ))
+                }
+              </div>
+
+              {/* CONTENT */}
+
               <div className="content-area">
+
                 {/* CREATE PANEL */}
-                {/* FIX: Render panel always (for CSS transition) but control
-                         visibility via className — avoids mount/unmount flash. */}
+
                 <div
-                  className={`create-panel${showCreatePanel ? " open" : ""}`}
+                  className={`create-panel ${
+                    showCreatePanel
+                      ? "open"
+                      : ""
+                  }`}
                 >
-                  <h3
-                    style={{ marginBottom: 12, fontSize: 14, fontWeight: 600 }}
-                  >
+
+                  <h3>
                     Create New Migration
                   </h3>
 
                   <input
                     className="input"
+
                     placeholder="Migration Name"
+
                     value={migrationName}
-                    onChange={(e) => setMigrationName(e.target.value)}
+
+                    onChange={(e) =>
+                      setMigrationName(
+                        e.target.value
+                      )
+                    }
                   />
 
                   <input
                     className="input"
-                    placeholder="Version (e.g. V2__add_users)"
+
+                    placeholder="Version"
+
                     value={migrationVersion}
-                    onChange={(e) => setMigrationVersion(e.target.value)}
+
+                    onChange={(e) =>
+                      setMigrationVersion(
+                        e.target.value
+                      )
+                    }
                   />
 
-                  <div className="editor-container">
-                    {/* FIX: Added aria-label for accessibility */}
-                    <p
-                      style={{
-                        fontSize: 10,
-                        fontWeight: 600,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.7px",
-                        color: "var(--text3)",
-                        marginBottom: 6,
-                        fontFamily: "var(--mono)",
-                      }}
-                    >
-                      UP Migration
-                    </p>
-                    <Editor
-                      height="160px"
-                      defaultLanguage="sql"
-                      theme={darkMode ? "vs-dark" : "light"}
-                      value={upSql}
-                      onChange={(v) => setUpSql(v || "")}
-                      options={{ minimap: { enabled: false }, fontSize: 12 }}
-                    />
-                    <p
-                      style={{
-                        fontSize: 10,
-                        fontWeight: 600,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.7px",
-                        color: "var(--text3)",
-                        margin: "12px 0 6px",
-                        fontFamily: "var(--mono)",
-                      }}
-                    >
-                      DOWN Migration (Rollback)
-                    </p>
-                    <Editor
-                      height="160px"
-                      defaultLanguage="sql"
-                      theme={darkMode ? "vs-dark" : "light"}
-                      value={downSql}
-                      onChange={(v) => setDownSql(v || "")}
-                      options={{ minimap: { enabled: false }, fontSize: 12 }}
-                    />
-                  </div>
+                  <Editor
+                    height="160px"
+
+                    defaultLanguage="sql"
+
+                    theme={
+                      darkMode
+                        ? "vs-dark"
+                        : "light"
+                    }
+
+                    value={upSql}
+
+                    onChange={(v) =>
+                      setUpSql(v || "")
+                    }
+                  />
+
+                  <Editor
+                    height="160px"
+
+                    defaultLanguage="sql"
+
+                    theme={
+                      darkMode
+                        ? "vs-dark"
+                        : "light"
+                    }
+
+                    value={downSql}
+
+                    onChange={(v) =>
+                      setDownSql(v || "")
+                    }
+                  />
 
                   <div className="panel-actions">
+
                     <button
                       className="btn"
-                      onClick={() => setShowCreatePanel(false)}
+
+                      onClick={() =>
+                        setShowCreatePanel(
+                          false
+                        )
+                      }
                     >
                       Cancel
                     </button>
+
                     <button
                       className="btn primary"
-                      onClick={createMigration}
+
+                      onClick={
+                        createMigration
+                      }
+
                       disabled={creating}
                     >
-                      {creating ? "Creating…" : "Create Migration"}
+                      {
+                        creating
+                          ? "Creating..."
+                          : "Create Migration"
+                      }
                     </button>
                   </div>
                 </div>
 
                 {/* CONTENT HEADER */}
+
                 <div className="content-header">
+
                   <span>
-                    {activeView === "pending"
+                    {
+                      activeView === "pending"
                       ? "Pending Migrations"
                       : activeView === "applied"
-                        ? "Applied Migrations"
-                        : "All Migrations"}
+                      ? "Applied Migrations"
+                      : "All Migrations"
+                    }
                   </span>
 
-                  <span className="badge">{filteredData.length} total</span>
+                  <span className="badge">
+                    {
+                      filteredData.length
+                    } total
+                  </span>
 
-                  {/* FIX: Moved search icon inside .search-box so the
-                           absolute-positioned .search-icon CSS rule works correctly. */}
                   <div className="search-box">
-                    <Search size={12} className="search-icon" />
+
+                    <Search
+                      size={12}
+                      className="search-icon"
+                    />
+
                     <input
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search migrations…"
+
+                      onChange={(e) =>
+                        setSearchQuery(
+                          e.target.value
+                        )
+                      }
+
+                      placeholder="Search migrations..."
                     />
                   </div>
                 </div>
 
-                {/* FIX: Pass filteredData instead of raw tableData so the table
-                         doesn't need to duplicate search filter logic.
-                         Also removed the `key={activeView}` prop — it was forcing
-                         a full unmount/remount of MigrationTable on every view switch,
-                         losing scroll position and causing a flash. Let the table
-                         update via props instead. */}
-                <MigrationTable searchQuery={searchQuery} data={filteredData} />
+                {/* TABLE */}
+
+                <MigrationTable
+                  searchQuery={
+                    searchQuery
+                  }
+
+                  data={filteredData}
+                />
               </div>
             </>
           )}
