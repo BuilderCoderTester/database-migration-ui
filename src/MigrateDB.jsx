@@ -155,6 +155,8 @@ const MigrateDB = () => {
         const connectionId =
           await safeJson(res);
 
+          if (!connectionId) return;
+
         const [historyRes, pendingRes] =
           await Promise.all([
             fetch(
@@ -250,8 +252,13 @@ const MigrateDB = () => {
     try {
 
       const res = await fetch(
-        `${API}/tables`
-      );
+  `${API}/tables`
+);
+
+if (!res.ok) {
+  setTables([]);
+  return;
+}
 
       const data =
         await safeJson(res);
@@ -328,6 +335,7 @@ const MigrateDB = () => {
 
       const connectionId =
         await safeJson(resp);
+        
 
       setLoading(true);
 
@@ -365,6 +373,7 @@ const MigrateDB = () => {
 
       const connectionId =
         await safeJson(resp);
+        
 
       await fetch(
         `${API}/rollback?connectionId=${connectionId}`,

@@ -158,36 +158,63 @@ const Connections = () => {
   };
 
   // ─── SET ACTIVE + CONNECT ─────────────────────────────────────────────
-  const setActive = async (conn) => {
-      if (conn.id === activeId) return;
-      console.log(conn.database);
-      try {
-        const res = await fetch(`${API}/set-active`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            database: conn.database, // 🔥 ONLY SEND THIS
-          }),
-        });
+ const setActive = async (conn) => {
 
-        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+  if (conn.id === activeId) return;
 
-        const data = await res.json();
+  try {
 
-        if (!data.success) {
-          alert("❌ " + (data.message || "Failed"));
-          return;
-        }
+    const res = await fetch(
+      `${API}/set-active`,
+      {
+        method: "POST",
 
-        setActiveId(data.data); // 🔥 backend returns connectionId
+        headers: {
+          "Content-Type": "application/json",
+        },
 
-        localStorage.setItem("activeConnection", data.data);
-
-        console.info("Active connection set:", conn.database);
-      } catch (err) {
-        alert("Error: " + err.message);
+        body: JSON.stringify({
+          database: conn.database,
+        }),
       }
-  };
+    );
+
+    if (!res.ok)
+      throw new Error(
+        `Server error: ${res.status}`
+      );
+
+    const data = await res.json();
+
+    if (!data.success) {
+
+      alert(
+        "❌ " +
+        (data.message || "Failed")
+      );
+
+      return;
+    }
+
+    setActiveId(data.data);
+
+    localStorage.setItem(
+      "activeConnection",
+      data.data
+    );
+
+    console.info(
+      "Active connection set:",
+      conn.database
+    );
+
+  } catch (err) {
+
+    alert(
+      "Error: " + err.message
+    );
+  }
+};
 
   // ─── DELETE ───────────────────────────────────────────────────────────
   // FIX: Added a confirmation prompt before deleting — destructive actions
