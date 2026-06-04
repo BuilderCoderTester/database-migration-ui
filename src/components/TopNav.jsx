@@ -4,7 +4,7 @@ import '../MigrateDB.css';
 
 const TopNav = ({ activeTab, setActiveTab }) => (
     <nav className="topnav">
-        
+
         {/* Logo Section */}
         <div className="topnav-left">
             <div className="logo-box">
@@ -17,18 +17,7 @@ const TopNav = ({ activeTab, setActiveTab }) => (
             </div>
         </div>
 
-        {/* Tabs */}
-        <div className="topnav-tabs">
-            {['Migrations', 'History', 'Baseline', 'Settings'].map(tab => (
-                <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
-                >
-                    {tab}
-                </button>
-            ))}
-        </div>
+
 
         {/* Right Status */}
         <div className="topnav-right">
@@ -36,9 +25,9 @@ const TopNav = ({ activeTab, setActiveTab }) => (
                 <span className="dot" />
                 prod-postgres-01
             </div>
-            
+
         </div>
-        
+
     </nav>
 );
 

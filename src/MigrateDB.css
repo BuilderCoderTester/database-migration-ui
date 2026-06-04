@@ -15,43 +15,43 @@
    LIGHT THEME (default) — applied on .migrate-container
    ============================================================ */
 .migrate-container {
-  --bg:           #f4f5f7;
-  --surface:      #ffffff;
-  --surface2:     #f0f1f4;
-  --surface3:     #e8eaf0;
-  --border:       #dde0e8;
-  --border2:      #c8ccd8;
-  --text:         #1a1d26;
-  --text2:        #5a6075;
-  --text3:        #9499a8;
+  --bg: #f4f5f7;
+  --surface: #ffffff;
+  --surface2: #f0f1f4;
+  --surface3: #e8eaf0;
+  --border: #dde0e8;
+  --border2: #c8ccd8;
+  --text: #1a1d26;
+  --text2: #5a6075;
+  --text3: #9499a8;
 
-  --gold:         #9a6f1e;
-  --gold-bg:      #fdf6e3;
-  --gold-border:  #e8d090;
+  --gold: #9a6f1e;
+  --gold-bg: #fdf6e3;
+  --gold-border: #e8d090;
 
-  --blue:         #2563c8;
-  --blue-bg:      #eff5ff;
-  --blue-border:  #bdd3f8;
+  --blue: #2563c8;
+  --blue-bg: #eff5ff;
+  --blue-border: #bdd3f8;
 
-  --cyan:         #0e7a8a;
-  --cyan-bg:      #e8f8fa;
-  --cyan-border:  #a0d8e0;
+  --cyan: #0e7a8a;
+  --cyan-bg: #e8f8fa;
+  --cyan-border: #a0d8e0;
 
-  --green:        #1a7a48;
-  --green-bg:     #eafaf2;
+  --green: #1a7a48;
+  --green-bg: #eafaf2;
   --green-border: #a0ddb8;
 
-  --amber:        #a05c10;
-  --amber-bg:     #fff7ed;
+  --amber: #a05c10;
+  --amber-bg: #fff7ed;
   --amber-border: #f8d090;
 
-  --red:          #b83030;
-  --red-bg:       #fff0f0;
-  --red-border:   #f8c0c0;
+  --red: #b83030;
+  --red-bg: #fff0f0;
+  --red-border: #f8c0c0;
 
-  --purple:       #5c3ab0;
-  --purple-bg:    #f3f0ff;
-  --purple-border:#c8b8f8;
+  --purple: #5c3ab0;
+  --purple-bg: #f3f0ff;
+  --purple-border: #c8b8f8;
 
   --mono: 'IBM Plex Mono', monospace;
   --sans: 'Inter', sans-serif;
@@ -71,43 +71,43 @@
    DARK THEME — toggle by adding .dark to .migrate-container
    ============================================================ */
 .migrate-container.dark {
-  --bg:           #0a0b0d;
-  --surface:      #111318;
-  --surface2:     #181c23;
-  --surface3:     #1e2330;
-  --border:       #252b38;
-  --border2:      #2d3547;
-  --text:         #d8dce8;
-  --text2:        #7c8499;
-  --text3:        #454e63;
+  --bg: #0a0b0d;
+  --surface: #111318;
+  --surface2: #181c23;
+  --surface3: #1e2330;
+  --border: #252b38;
+  --border2: #2d3547;
+  --text: #d8dce8;
+  --text2: #7c8499;
+  --text3: #454e63;
 
-  --gold:         #c8a85a;
-  --gold-bg:      #1e1a0e;
-  --gold-border:  #2e2410;
+  --gold: #c8a85a;
+  --gold-bg: #1e1a0e;
+  --gold-border: #2e2410;
 
-  --blue:         #5b8fd4;
-  --blue-bg:      #0f1c2e;
-  --blue-border:  #132440;
+  --blue: #5b8fd4;
+  --blue-bg: #0f1c2e;
+  --blue-border: #132440;
 
-  --cyan:         #4ab8c8;
-  --cyan-bg:      #0a1f24;
-  --cyan-border:  #0d2830;
+  --cyan: #4ab8c8;
+  --cyan-bg: #0a1f24;
+  --cyan-border: #0d2830;
 
-  --green:        #4caf7d;
-  --green-bg:     #0a1f15;
+  --green: #4caf7d;
+  --green-bg: #0a1f15;
   --green-border: #0e2a18;
 
-  --amber:        #d4944a;
-  --amber-bg:     #1e1408;
+  --amber: #d4944a;
+  --amber-bg: #1e1408;
   --amber-border: #2a1c08;
 
-  --red:          #c95c5c;
-  --red-bg:       #200d0d;
-  --red-border:   #2e1010;
+  --red: #c95c5c;
+  --red-bg: #200d0d;
+  --red-border: #2e1010;
 
-  --purple:       #8b78d8;
-  --purple-bg:    #151030;
-  --purple-border:#1c1540;
+  --purple: #8b78d8;
+  --purple-bg: #151030;
+  --purple-border: #1c1540;
 }
 
 /* ============================================================
@@ -248,8 +248,15 @@
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.35; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
 }
 
 /* ============================================================
@@ -438,11 +445,25 @@
 }
 
 /* Stat color variants */
-.stat-blue    { color: var(--blue); }
-.stat-green   { color: var(--green); }
-.stat-amber   { color: var(--amber); }
-.stat-red     { color: var(--red); }
-.stat-neutral { color: var(--text); }
+.stat-blue {
+  color: var(--blue);
+}
+
+.stat-green {
+  color: var(--green);
+}
+
+.stat-amber {
+  color: var(--amber);
+}
+
+.stat-red {
+  color: var(--red);
+}
+
+.stat-neutral {
+  color: var(--text);
+}
 
 /* ============================================================
    SIDEBAR
@@ -657,8 +678,13 @@
 }
 
 /* Status icon variants */
-.icon-success { color: var(--green); }
-.icon-failed  { color: var(--red); }
+.icon-success {
+  color: var(--green);
+}
+
+.icon-failed {
+  color: var(--red);
+}
 
 .dot-pending {
   width: 8px;
@@ -669,17 +695,78 @@
 }
 
 /* Text helpers */
-.mono      { font-family: var(--mono); font-size: 11px; }
-.text-main { color: var(--text); }
-.text-dim  { color: var(--text2); }
-.text-muted{ color: var(--text3); }
+.mono {
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+.text-main {
+  color: var(--text);
+}
+
+.text-dim {
+  color: var(--text2);
+}
+
+.text-muted {
+  color: var(--text3);
+}
 
 /* Table badge variants */
-.badge-blue   { background: var(--blue-bg);   color: var(--blue);   border: 1px solid var(--blue-border);   padding: 2px 7px; border-radius: 10px; font-size: 10px; font-family: var(--mono); font-weight: 600; }
-.badge-purple { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-border); padding: 2px 7px; border-radius: 10px; font-size: 10px; font-family: var(--mono); font-weight: 600; }
-.badge-green  { background: var(--green-bg);  color: var(--green);  border: 1px solid var(--green-border);  padding: 2px 7px; border-radius: 10px; font-size: 10px; font-family: var(--mono); font-weight: 600; }
-.badge-amber  { background: var(--amber-bg);  color: var(--amber);  border: 1px solid var(--amber-border);  padding: 2px 7px; border-radius: 10px; font-size: 10px; font-family: var(--mono); font-weight: 600; }
-.badge-cyan   { background: var(--cyan-bg);   color: var(--cyan);   border: 1px solid var(--cyan-border);   padding: 2px 7px; border-radius: 10px; font-size: 10px; font-family: var(--mono); font-weight: 600; }
+.badge-blue {
+  background: var(--blue-bg);
+  color: var(--blue);
+  border: 1px solid var(--blue-border);
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-family: var(--mono);
+  font-weight: 600;
+}
+
+.badge-purple {
+  background: var(--purple-bg);
+  color: var(--purple);
+  border: 1px solid var(--purple-border);
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-family: var(--mono);
+  font-weight: 600;
+}
+
+.badge-green {
+  background: var(--green-bg);
+  color: var(--green);
+  border: 1px solid var(--green-border);
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-family: var(--mono);
+  font-weight: 600;
+}
+
+.badge-amber {
+  background: var(--amber-bg);
+  color: var(--amber);
+  border: 1px solid var(--amber-border);
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-family: var(--mono);
+  font-weight: 600;
+}
+
+.badge-cyan {
+  background: var(--cyan-bg);
+  color: var(--cyan);
+  border: 1px solid var(--cyan-border);
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-family: var(--mono);
+  font-weight: 600;
+}
 
 /* ============================================================
    ACTIVITY LOG
@@ -731,10 +818,21 @@
 }
 
 /* Log dot color variants */
-.dot-green { background: var(--green); }
-.dot-blue  { background: var(--blue); }
-.dot-amber { background: var(--amber); }
-.dot-red   { background: var(--red); }
+.dot-green {
+  background: var(--green);
+}
+
+.dot-blue {
+  background: var(--blue);
+}
+
+.dot-amber {
+  background: var(--amber);
+}
+
+.dot-red {
+  background: var(--red);
+}
 
 .log-text {
   font-size: 11px;
@@ -770,7 +868,9 @@
   border-bottom: none;
 }
 
-.info-label { color: var(--text3); }
+.info-label {
+  color: var(--text3);
+}
 
 .info-value {
   font-family: var(--mono);
@@ -847,7 +947,8 @@
   backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
-  align-items: center;       /* FIX: use center instead of flex-start + translateY hack */
+  align-items: center;
+  /* FIX: use center instead of flex-start + translateY hack */
   z-index: 9999;
 }
 
@@ -906,9 +1007,21 @@
   opacity: 0.85;
 }
 
-.btn-primary   { background: var(--blue);  color: #fff; }
-.btn-secondary { background: var(--surface3); color: var(--text2); border: 1px solid var(--border2); }
-.btn-preview   { background: var(--green); color: #fff; }
+.btn-primary {
+  background: var(--blue);
+  color: #fff;
+}
+
+.btn-secondary {
+  background: var(--surface3);
+  color: var(--text2);
+  border: 1px solid var(--border2);
+}
+
+.btn-preview {
+  background: var(--green);
+  color: #fff;
+}
 
 /* ============================================================
    CREATE PANEL
@@ -1282,6 +1395,7 @@
   background: var(--green);
   color: #fff;
 }
+
 .tables-layout {
   display: flex;
   gap: 20px;
@@ -1334,4 +1448,79 @@
 .tables-content h2 {
   margin-bottom: 20px;
   color: white;
+}
+
+.repair-btn {
+  background: #22c55e;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.repair-btn:hover {
+  background: #16a34a;
+}
+
+.repair-btn {
+  background: #22c55e;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.repair-btn:hover {
+  background: #16a34a;
+}
+
+.table-details-card {
+  background: #111827;
+  color: white;
+  border-radius: 20px;
+  padding: 24px;
+  margin: 20px;
+  min-height: 320px;
+}
+
+.table-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.table-summary {
+  margin-bottom: 24px;
+  line-height: 1.8;
+}
+
+.column-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.column-row {
+  display: grid;
+  grid-template-columns: 200px 200px 60px;
+  align-items: center;
+  font-family: monospace;
+}
+
+.col-name {
+  color: white;
+}
+
+.col-type {
+  color: #cbd5e1;
+}
+
+.pk-badge {
+  color: #facc15;
+  font-weight: bold;
 }
