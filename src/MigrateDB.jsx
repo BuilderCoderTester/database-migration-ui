@@ -416,22 +416,28 @@ const MigrateDB = () => {
   // REPAIR
   // =====================================================
 
-  const handleRepair = async () => {
+  const handleRepair = async (version) => {
 
     try {
 
-      await fetch(
-        `${API}/repair`,
+      const response = await fetch(
+        `${API}/repair?version=${version}`,
         {
           method: "POST",
         }
       );
+
+      const result = await response.json();
+
+      alert(result.message || "Repair successful");
 
       await loadData();
 
     } catch (err) {
 
       console.error(err);
+
+      alert("Repair failed");
     }
   };
 
@@ -814,19 +820,7 @@ const MigrateDB = () => {
 
                         <div className="spacer" />
 
-                        <ToolbarButton
-                          icon={
-                            <Wrench size={14} />
-                          }
 
-                          label="Repair"
-
-                          variant="green"
-
-                          onClick={
-                            handleRepair
-                          }
-                        />
 
                         <ToolbarButton
                           icon={

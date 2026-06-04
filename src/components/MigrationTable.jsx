@@ -7,24 +7,29 @@ const MigrationTable = ({ searchQuery, data = [] }) => {
 
     const handleRepair = async (version) => {
         try {
-            await axios.post(
-                `http://localhost:8080/api/migrations/repair/${version}`
+
+            const response = await axios.post(
+                `http://localhost:8081/api/migrations/repair?version=${version}`
             );
 
-            alert(`Migration ${version} repaired successfully`);
+            alert(
+                response.data?.message ||
+                `Migration ${version} repaired successfully`
+            );
 
-            // Optional: refresh page after repair
             window.location.reload();
+
         } catch (err) {
+
             console.error(err);
+
             alert('Repair failed');
         }
     };
 
-    // 🔍 Filter using backend fields
     const filteredData = data.filter(item =>
         item.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.version?.toLowerCase().includes(searchQuery.toLowerCase())
+        String(item.version)?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
@@ -62,7 +67,6 @@ const MigrationTable = ({ searchQuery, data = [] }) => {
                     {filteredData.map((row, i) => (
                         <tr key={i} className="table-row">
 
-                            {/* Status Icon */}
                             <td className="cell-icon">
                                 {row.success
                                     ? <CheckCircle2 size={14} className="icon-success" />
@@ -70,29 +74,24 @@ const MigrationTable = ({ searchQuery, data = [] }) => {
                                 }
                             </td>
 
-                            {/* Version */}
                             <td className="mono text-dim">
                                 {row.version ? `V${row.version}` : '-'}
                             </td>
 
-                            {/* Description */}
                             <td className="text-main">
                                 {row.description || '-'}
                             </td>
 
-                            {/* Applied Date */}
                             <td className="mono text-muted">
                                 {row.executedAt || '-'}
                             </td>
 
-                            {/* Duration */}
                             <td className="mono text-muted">
                                 {row.executionTime
                                     ? `${row.executionTime} ms`
                                     : '-'}
                             </td>
 
-                            {/* Status */}
                             <td>
                                 <div
                                     style={{
@@ -102,7 +101,9 @@ const MigrationTable = ({ searchQuery, data = [] }) => {
                                     }}
                                 >
                                     <span
-                                        className={`status-badge ${row.success ? 'success' : 'failed'
+                                        className={`status-badge ${row.success
+                                            ? 'success'
+                                            : 'failed'
                                             }`}
                                     >
                                         {row.success ? 'Applied' : 'Failed'}
@@ -111,7 +112,9 @@ const MigrationTable = ({ searchQuery, data = [] }) => {
                                     {!row.success && (
                                         <button
                                             className="repair-btn"
-                                            onClick={() => handleRepair(row.version)}
+                                            onClick={() =>
+                                                handleRepair(row.version)
+                                            }
                                         >
                                             Repair
                                         </button>
