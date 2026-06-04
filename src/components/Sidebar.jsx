@@ -6,19 +6,20 @@ import {
   Settings,
   Activity,
   Table2,
-} from "lucide-react"; 
+} from "lucide-react";
 import React from "react";
 import "../MigrateDB.css";
 
 const Sidebar = ({
-  onPendingClick,
+  active,
   onAllClick,
+  onPendingClick,
   onAppliedClick,
+  onRunHistoryClick,
   onConnectionsClick,
   onTablesClick,
-  active,
 }) => (
-  <aside className="sidebar">
+  < aside className="sidebar" >
     <div className="sidebar-section-title">Views</div>
 
     <SidebarItem
@@ -43,7 +44,9 @@ const Sidebar = ({
       onClick={onAppliedClick}
     />
 
-    <SidebarItem icon={<Activity size={15} />} label="Run History" />
+    <SidebarItem icon={<Activity size={15} />} label="Run History"
+      active={active === "history"}
+      onClick={onRunHistoryClick} />
 
     <div className="sidebar-section-title mt">Config</div>
 
@@ -54,13 +57,13 @@ const Sidebar = ({
       onClick={onConnectionsClick}
     />
     <SidebarItem
-  icon={<Table2 size={15} />}
-  label="Tables"
-  active={active === "tables"}
-  onClick={onTablesClick}
-/>
+      icon={<Table2 size={15} />}
+      label="Tables"
+      active={active === "tables"}
+      onClick={onTablesClick}
+    />
     <SidebarItem icon={<Settings size={15} />} label="Settings" />
-  </aside>
+  </aside >
 );
 
 export default Sidebar;

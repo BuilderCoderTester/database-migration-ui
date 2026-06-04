@@ -21,6 +21,7 @@ import StatCard from "./components/StatCard";
 import MigrationTable from "./components/MigrationTable";
 import ActivityLog from "./components/ActivityLog";
 import Connections from "./components/Connections";
+import RunHistory from "./components/RunHistory";
 
 import Editor from "@monaco-editor/react";
 
@@ -615,10 +616,14 @@ const MigrateDB = () => {
           onAppliedClick={() =>
             setActiveView("applied")
           }
+          onRunHistoryClick={() =>
+            setActiveView("history")
+          }
 
           onConnectionsClick={() =>
             setActiveView("connections")
           }
+
 
           onTablesClick={() =>
             setActiveView("tables")
@@ -630,350 +635,133 @@ const MigrateDB = () => {
           {/* CONNECTIONS */}
 
           {
-            activeView === "connections"
+            activeView === "history"
               ? (
-                <Connections />
-              ) : activeView === "tables"
+                <RunHistory
+                  history={history}
+                />
+              )
+              : activeView === "connections"
                 ? (
+                  <Connections />
+                ) : activeView === "tables"
+                  ? (
 
-                  // TABLES VIEW
+                    // TABLES VIEW
 
-                  <div className="tables-layout">
+                    <div className="tables-layout">
 
-                    <div className="tables-sidebar">
-
-                      <h3>
-                        Database Tables
-                      </h3>
-
-                      {
-                        (
-                          Array.isArray(tables)
-                            ? tables
-                            : []
-                        ).map(
-                          (table, index) => (
-
-                            <button
-                              key={index}
-
-                              className={`table-item ${selectedTable === table
-                                ? "active"
-                                : ""
-                                }`}
-
-                              onClick={() =>
-                                loadTableData(table)
-                              }
-                            >
-                              {table}
-                            </button>
-                          ))
-                      }
-                    </div>
-
-                    <div className="tables-content">
-
-                      <h2>
-                        {selectedTable || "Select Table"}
-                      </h2>
-
-                      {
-                        Array.isArray(tableData) &&
-                          tableData.length > 0
-                          ? (
-
-                            <div className="table-container">
-
-                              <table className="migration-table">
-
-                                <thead>
-                                  <tr>
-                                    {
-                                      Object.keys(tableData[0]).map((col) => (
-                                        <th key={col}>{col}</th>
-                                      ))
-                                    }
-                                  </tr>
-                                </thead>
-
-                                <tbody>
-                                  {
-                                    tableData.map((row, rowIndex) => (
-                                      <tr key={rowIndex}>
-                                        {
-                                          Object.values(row).map((value, colIndex) => (
-                                            <td key={colIndex}>
-                                              {String(value)}
-                                            </td>
-                                          ))
-                                        }
-                                      </tr>
-                                    ))
-                                  }
-                                </tbody>
-
-                              </table>
-
-                            </div>
-
-                          ) : (
-
-                            <div className="table-details-card">
-
-                              <h2>
-                                {selectedTable || "Select Table"}
-                              </h2>
-
-                              <p
-                                style={{
-                                  color: "#9ca3af",
-                                  marginTop: "12px"
-                                }}
-                              >
-                                No data available
-                              </p>
-
-                            </div>
-
-                          )
-                      }
-
-                    </div>
-                  </div>
-
-                ) : (
-
-                  <>
-                    {/* TOOLBAR */}
-
-                    <div className="topnav">
-
-                      <span className="toolbar-title">
-
-                        {
-                          activeView === "pending"
-                            ? "Pending Migrations"
-                            : activeView === "applied"
-                              ? "Applied Migrations"
-                              : "All Migrations"
-                        }
-                      </span>
-
-                      <ToolbarButton
-                        icon={<Plus size={14} />}
-                        label="New Migration"
-
-                        onClick={() =>
-                          setShowCreatePanel(
-                            !showCreatePanel
-                          )
-                        }
-                      />
-
-                      <ToolbarButton
-                        icon={
-                          <ShieldCheck
-                            size={14}
-                          />
-                        }
-
-                        label="Validate"
-
-                        onClick={
-                          handleValidate
-                        }
-                      />
-
-                      <ToolbarButton
-                        icon={
-                          <RotateCcw
-                            size={14}
-                          />
-                        }
-
-                        label="Rollback"
-
-                        variant="red"
-
-                        onClick={
-                          handleRollback
-                        }
-                      />
-
-                      <div className="spacer" />
-
-                      <ToolbarButton
-                        icon={
-                          <Wrench size={14} />
-                        }
-
-                        label="Repair"
-
-                        variant="green"
-
-                        onClick={
-                          handleRepair
-                        }
-                      />
-
-                      <ToolbarButton
-                        icon={
-                          <ArrowDownToLine
-                            size={14}
-                          />
-                        }
-
-                        label={
-                          loading
-                            ? "Migrating..."
-                            : "Migrate Now"
-                        }
-
-                        variant="blue"
-
-                        onClick={
-                          handleMigrate
-                        }
-
-                        disabled={loading}
-                      />
-                    </div>
-
-                    {/* STATS */}
-
-                    <div className="stats-grid">
-
-                      {
-                        stats.map(
-                          (stat, i) => (
-
-                            <StatCard
-                              key={i}
-                              {...stat}
-                            />
-                          ))
-                      }
-                    </div>
-
-                    {/* CONTENT */}
-
-                    <div className="content-area">
-
-                      {/* CREATE PANEL */}
-
-                      <div
-                        className={`create-panel ${showCreatePanel
-                          ? "open"
-                          : ""
-                          }`}
-                      >
+                      <div className="tables-sidebar">
 
                         <h3>
-                          Create New Migration
+                          Database Tables
                         </h3>
 
-                        <input
-                          className="input"
+                        {
+                          (
+                            Array.isArray(tables)
+                              ? tables
+                              : []
+                          ).map(
+                            (table, index) => (
 
-                          placeholder="Migration Name"
+                              <button
+                                key={index}
 
-                          value={migrationName}
+                                className={`table-item ${selectedTable === table
+                                  ? "active"
+                                  : ""
+                                  }`}
 
-                          onChange={(e) =>
-                            setMigrationName(
-                              e.target.value
-                            )
-                          }
-                        />
-
-                        <input
-                          className="input"
-
-                          placeholder="Version"
-
-                          value={migrationVersion}
-
-                          onChange={(e) =>
-                            setMigrationVersion(
-                              e.target.value
-                            )
-                          }
-                        />
-
-                        <Editor
-                          height="160px"
-
-                          defaultLanguage="sql"
-
-                          theme={
-                            darkMode
-                              ? "vs-dark"
-                              : "light"
-                          }
-
-                          value={upSql}
-
-                          onChange={(v) =>
-                            setUpSql(v || "")
-                          }
-                        />
-
-                        <Editor
-                          height="160px"
-
-                          defaultLanguage="sql"
-
-                          theme={
-                            darkMode
-                              ? "vs-dark"
-                              : "light"
-                          }
-
-                          value={downSql}
-
-                          onChange={(v) =>
-                            setDownSql(v || "")
-                          }
-                        />
-
-                        <div className="panel-actions">
-
-                          <button
-                            className="btn"
-
-                            onClick={() =>
-                              setShowCreatePanel(
-                                false
-                              )
-                            }
-                          >
-                            Cancel
-                          </button>
-
-                          <button
-                            className="btn primary"
-
-                            onClick={
-                              createMigration
-                            }
-
-                            disabled={creating}
-                          >
-                            {
-                              creating
-                                ? "Creating..."
-                                : "Create Migration"
-                            }
-                          </button>
-                        </div>
+                                onClick={() =>
+                                  loadTableData(table)
+                                }
+                              >
+                                {table}
+                              </button>
+                            ))
+                        }
                       </div>
 
-                      {/* CONTENT HEADER */}
+                      <div className="tables-content">
 
-                      <div className="content-header">
+                        <h2>
+                          {selectedTable || "Select Table"}
+                        </h2>
 
-                        <span>
+                        {
+                          Array.isArray(tableData) &&
+                            tableData.length > 0
+                            ? (
+
+                              <div className="table-container">
+
+                                <table className="migration-table">
+
+                                  <thead>
+                                    <tr>
+                                      {
+                                        Object.keys(tableData[0]).map((col) => (
+                                          <th key={col}>{col}</th>
+                                        ))
+                                      }
+                                    </tr>
+                                  </thead>
+
+                                  <tbody>
+                                    {
+                                      tableData.map((row, rowIndex) => (
+                                        <tr key={rowIndex}>
+                                          {
+                                            Object.values(row).map((value, colIndex) => (
+                                              <td key={colIndex}>
+                                                {String(value)}
+                                              </td>
+                                            ))
+                                          }
+                                        </tr>
+                                      ))
+                                    }
+                                  </tbody>
+
+                                </table>
+
+                              </div>
+
+                            ) : (
+
+                              <div className="table-details-card">
+
+                                <h2>
+                                  {selectedTable || "Select Table"}
+                                </h2>
+
+                                <p
+                                  style={{
+                                    color: "#9ca3af",
+                                    marginTop: "12px"
+                                  }}
+                                >
+                                  No data available
+                                </p>
+
+                              </div>
+
+                            )
+                        }
+
+                      </div>
+                    </div>
+
+                  ) : (
+
+                    <>
+                      {/* TOOLBAR */}
+
+                      <div className="topnav">
+
+                        <span className="toolbar-title">
+
                           {
                             activeView === "pending"
                               ? "Pending Migrations"
@@ -983,45 +771,268 @@ const MigrateDB = () => {
                           }
                         </span>
 
-                        <span className="badge">
-                          {
-                            filteredData.length
-                          } total
-                        </span>
+                        <ToolbarButton
+                          icon={<Plus size={14} />}
+                          label="New Migration"
 
-                        <div className="search-box">
+                          onClick={() =>
+                            setShowCreatePanel(
+                              !showCreatePanel
+                            )
+                          }
+                        />
 
-                          <Search
-                            size={12}
-                            className="search-icon"
-                          />
+                        <ToolbarButton
+                          icon={
+                            <ShieldCheck
+                              size={14}
+                            />
+                          }
+
+                          label="Validate"
+
+                          onClick={
+                            handleValidate
+                          }
+                        />
+
+                        <ToolbarButton
+                          icon={
+                            <RotateCcw
+                              size={14}
+                            />
+                          }
+
+                          label="Rollback"
+
+                          variant="red"
+
+                          onClick={
+                            handleRollback
+                          }
+                        />
+
+                        <div className="spacer" />
+
+                        <ToolbarButton
+                          icon={
+                            <Wrench size={14} />
+                          }
+
+                          label="Repair"
+
+                          variant="green"
+
+                          onClick={
+                            handleRepair
+                          }
+                        />
+
+                        <ToolbarButton
+                          icon={
+                            <ArrowDownToLine
+                              size={14}
+                            />
+                          }
+
+                          label={
+                            loading
+                              ? "Migrating..."
+                              : "Migrate Now"
+                          }
+
+                          variant="blue"
+
+                          onClick={
+                            handleMigrate
+                          }
+
+                          disabled={loading}
+                        />
+                      </div>
+
+                      {/* STATS */}
+
+                      <div className="stats-grid">
+
+                        {
+                          stats.map(
+                            (stat, i) => (
+
+                              <StatCard
+                                key={i}
+                                {...stat}
+                              />
+                            ))
+                        }
+                      </div>
+
+                      {/* CONTENT */}
+
+                      <div className="content-area">
+
+                        {/* CREATE PANEL */}
+
+                        <div
+                          className={`create-panel ${showCreatePanel
+                            ? "open"
+                            : ""
+                            }`}
+                        >
+
+                          <h3>
+                            Create New Migration
+                          </h3>
 
                           <input
-                            value={searchQuery}
+                            className="input"
+
+                            placeholder="Migration Name"
+
+                            value={migrationName}
 
                             onChange={(e) =>
-                              setSearchQuery(
+                              setMigrationName(
                                 e.target.value
                               )
                             }
-
-                            placeholder="Search migrations..."
                           />
+
+                          <input
+                            className="input"
+
+                            placeholder="Version"
+
+                            value={migrationVersion}
+
+                            onChange={(e) =>
+                              setMigrationVersion(
+                                e.target.value
+                              )
+                            }
+                          />
+
+                          <Editor
+                            height="160px"
+
+                            defaultLanguage="sql"
+
+                            theme={
+                              darkMode
+                                ? "vs-dark"
+                                : "light"
+                            }
+
+                            value={upSql}
+
+                            onChange={(v) =>
+                              setUpSql(v || "")
+                            }
+                          />
+
+                          <Editor
+                            height="160px"
+
+                            defaultLanguage="sql"
+
+                            theme={
+                              darkMode
+                                ? "vs-dark"
+                                : "light"
+                            }
+
+                            value={downSql}
+
+                            onChange={(v) =>
+                              setDownSql(v || "")
+                            }
+                          />
+
+                          <div className="panel-actions">
+
+                            <button
+                              className="btn"
+
+                              onClick={() =>
+                                setShowCreatePanel(
+                                  false
+                                )
+                              }
+                            >
+                              Cancel
+                            </button>
+
+                            <button
+                              className="btn primary"
+
+                              onClick={
+                                createMigration
+                              }
+
+                              disabled={creating}
+                            >
+                              {
+                                creating
+                                  ? "Creating..."
+                                  : "Create Migration"
+                              }
+                            </button>
+                          </div>
                         </div>
+
+                        {/* CONTENT HEADER */}
+
+                        <div className="content-header">
+
+                          <span>
+                            {
+                              activeView === "pending"
+                                ? "Pending Migrations"
+                                : activeView === "applied"
+                                  ? "Applied Migrations"
+                                  : "All Migrations"
+                            }
+                          </span>
+
+                          <span className="badge">
+                            {
+                              filteredData.length
+                            } total
+                          </span>
+
+                          <div className="search-box">
+
+                            <Search
+                              size={12}
+                              className="search-icon"
+                            />
+
+                            <input
+                              value={searchQuery}
+
+                              onChange={(e) =>
+                                setSearchQuery(
+                                  e.target.value
+                                )
+                              }
+
+                              placeholder="Search migrations..."
+                            />
+                          </div>
+                        </div>
+
+                        {/* TABLE */}
+
+                        <MigrationTable
+                          searchQuery={
+                            searchQuery
+                          }
+
+                          data={filteredData}
+                        />
                       </div>
-
-                      {/* TABLE */}
-
-                      <MigrationTable
-                        searchQuery={
-                          searchQuery
-                        }
-
-                        data={filteredData}
-                      />
-                    </div>
-                  </>
-                )}
+                    </>
+                  )}
         </main>
 
         <ActivityLog />
