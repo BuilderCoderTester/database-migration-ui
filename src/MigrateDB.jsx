@@ -17,7 +17,7 @@ import StatCard from "./components/StatCard";
 import MigrationTable from "./components/MigrationTable";
 import ActivityLog from "./components/ActivityLog";
 import Connections from "./components/Connections";
-
+import RunHistory from "./components/RunHistory";
 import Editor from "@monaco-editor/react";
 
 const API = "http://localhost:8081/api/migrations";
@@ -416,6 +416,7 @@ const MigrateDB = () => {
           onAllClick={() => setActiveView("all")}
           onPendingClick={() => setActiveView("pending")}
           onAppliedClick={() => setActiveView("applied")}
+          onRunHistoryClick={() => setActiveView("runHistory")}
           onConnectionsClick={() => setActiveView("connections")}
           onTablesClick={() => setActiveView("tables")}
         />
@@ -423,7 +424,9 @@ const MigrateDB = () => {
         <main className="main-content">
           {/* CONNECTIONS */}
 
-          {activeView === "connections" ? (
+          {activeView === "runHistory" ? (
+            <RunHistory />
+          ) : activeView === "connections" ? (
             <Connections />
           ) : activeView === "tables" ? (
             // TABLES VIEW
@@ -435,9 +438,8 @@ const MigrateDB = () => {
                 {(Array.isArray(tables) ? tables : []).map((table, index) => (
                   <button
                     key={index}
-                    className={`table-item ${
-                      selectedTable === table ? "active" : ""
-                    }`}
+                    className={`table-item ${selectedTable === table ? "active" : ""
+                      }`}
                     onClick={() => loadTableData(table)}
                   >
                     {table}
