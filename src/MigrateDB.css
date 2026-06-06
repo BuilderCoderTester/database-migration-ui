@@ -1524,3 +1524,44 @@
   color: #facc15;
   font-weight: bold;
 }
+.status-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.repair-btn {
+    padding: 4px 10px;
+    font-size: 12px;
+    border: 1px solid #f59e0b;
+    background: #fffbeb;
+    color: #b45309;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.repair-btn:hover {
+    background: #fef3c7;
+}
+
+.delete-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border: 1px solid #ef4444;
+    background: #fef2f2;
+    color: #dc2626;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background: #fee2e2;
+}
