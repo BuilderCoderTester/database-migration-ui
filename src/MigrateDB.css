@@ -1524,44 +1524,82 @@
   color: #facc15;
   font-weight: bold;
 }
+
 .status-cell {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .action-buttons {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .repair-btn {
-    padding: 4px 10px;
-    font-size: 12px;
-    border: 1px solid #f59e0b;
-    background: #fffbeb;
-    color: #b45309;
-    border-radius: 4px;
-    cursor: pointer;
+  padding: 4px 10px;
+  font-size: 12px;
+  border: 1px solid #f59e0b;
+  background: #fffbeb;
+  color: #b45309;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .repair-btn:hover {
-    background: #fef3c7;
+  background: #fef3c7;
 }
 
 .delete-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4px;
-    border: 1px solid #ef4444;
-    background: #fef2f2;
-    color: #dc2626;
-    border-radius: 4px;
-    cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: 1px solid #ef4444;
+  background: #fef2f2;
+  color: #dc2626;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .delete-btn:hover {
-    background: #fee2e2;
+  background: #fee2e2;
+}
+
+.info-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #3b82f6;
+  color: white;
+}
+
+.info-btn:hover {
+  opacity: 0.9;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.validate-btn {
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #f59e0b;
+  color: white;
+  font-size: 12px;
+}
+
+.validate-btn:hover {
+  opacity: 0.9;
 }
