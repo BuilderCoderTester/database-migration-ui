@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback } from "react";
-
 import {
   Search,
   Plus,
@@ -8,9 +7,7 @@ import {
   Wrench,
   ArrowDownToLine,
 } from "lucide-react";
-
 import "./MigrateDB.css";
-
 import Sidebar from "./components/Sidebar";
 import TopNav from "./components/TopNav";
 import StatCard from "./components/StatCard";
@@ -19,6 +16,8 @@ import ActivityLog from "./components/ActivityLog";
 import Connections from "./components/Connections";
 import RunHistory from "./components/RunHistory";
 import Editor from "@monaco-editor/react";
+import AutomatedMigrationBuilder from "./components/AutomatedMigrationBuilder";
+import MigrationScriptEditor from "./components/MigrationScriptEditor";
 
 const API = "http://localhost:8081/api/migrations";
 
@@ -29,15 +28,10 @@ const API = "http://localhost:8081/api/migrations";
 const safeJson = async (response) => {
   try {
     const text = await response.text();
-
-    if (!text || text.trim() === "") {
-      return [];
-    }
-
+    if (!text || text.trim() === "") return [];
     return JSON.parse(text);
   } catch (err) {
     console.error("JSON Parse Error:", err);
-
     return [];
   }
 };
@@ -63,38 +57,41 @@ const ToolbarButton = ({ icon, label, variant, onClick, disabled }) => (
 
 const MigrateDB = () => {
   const [activeTab, setActiveTab] = useState("Migrations");
-
   const [searchQuery, setSearchQuery] = useState("");
-
   const [stats, setStats] = useState([]);
-
   const [history, setHistory] = useState([]);
-
   const [pendingList, setPendingList] = useState([]);
-
   const [tables, setTables] = useState([]);
-
   const [selectedTable, setSelectedTable] = useState(null);
-
   const [tableData, setTableData] = useState([]);
-
   const [loading, setLoading] = useState(false);
-
   const [darkMode, setDarkMode] = useState(false);
-
-  const [showCreatePanel, setShowCreatePanel] = useState(false);
-
   const [activeView, setActiveView] = useState("all");
 
+  // Migration creation state
+  const [showMigrationTypeModal, setShowMigrationTypeModal] = useState(false);
+  const [showManualPanel, setShowManualPanel] = useState(false);
+  const [showAutoBuilder, setShowAutoBuilder] = useState(false);
   const [upSql, setUpSql] = useState("-- Write your UP SQL here\n");
-
   const [downSql, setDownSql] = useState("-- Write your DOWN SQL here\n");
-
   const [migrationName, setMigrationName] = useState("");
-
   const [migrationVersion, setMigrationVersion] = useState("");
-
   const [creating, setCreating] = useState(false);
+  const [showScriptEditor, setShowScriptEditor] = useState(false);
+
+  const [selectedMigration, setSelectedMigration] = useState(null);
+
+  const [editUpSql, setEditUpSql] = useState("");
+
+  const [editDownSql, setEditDownSql] = useState("");
+  // =====================================================
+  // HELPER: GET CONNECTION ID
+  // =====================================================
+
+  const getConnectionId = async () => {
+    const res = await fetch(`${API}/get-connection`);
+    return safeJson(res);
+  };
 
   // =====================================================
   // LOAD DATA
@@ -102,36 +99,26 @@ const MigrateDB = () => {
 
   const loadData = useCallback(async () => {
     try {
-      const res = await fetch(`${API}/get-connection`);
-
-      const connectionId = await safeJson(res);
-
+      const connectionId = await getConnectionId();
       if (!connectionId) return;
 
       const [historyRes, pendingRes] = await Promise.all([
         fetch(`${API}/history?connectionId=${connectionId}`),
-
         fetch(`${API}/pending?connectionId=${connectionId}`),
       ]);
 
       const historyData = await safeJson(historyRes);
-
       const pendingData = await safeJson(pendingRes);
 
       const safeHistory = Array.isArray(historyData) ? historyData : [];
-
       const safePending = Array.isArray(pendingData) ? pendingData : [];
 
       setHistory(safeHistory);
-
       setPendingList(safePending);
 
       const applied = safeHistory.length;
-
       const failed = safeHistory.filter((m) => m.success === false).length;
-
       const pending = safePending.length;
-
       const total = applied + pending;
 
       setStats([
@@ -141,31 +128,22 @@ const MigrateDB = () => {
           sub: "migrations found",
           color: "stat-blue",
         },
-
         {
           label: "Applied",
           value: applied,
           sub: "successfully run",
           color: "stat-green",
         },
-
         {
           label: "Pending",
           value: pending,
           sub: "awaiting execution",
           color: "stat-amber",
         },
-
-        {
-          label: "Failed",
-          value: failed,
-          sub: "errors",
-          color: "stat-red",
-        },
+        { label: "Failed", value: failed, sub: "errors", color: "stat-red" },
       ]);
     } catch (err) {
       console.error(err);
-
       setHistory([]);
       setPendingList([]);
     }
@@ -175,28 +153,21 @@ const MigrateDB = () => {
   // LOAD TABLES
   // =====================================================
 
-  const loadTables = async () => {
+  const loadTables = useCallback(async () => {
     try {
-      const resp = await fetch(`${API}/get-connection`);
-
-      const connectionId = await safeJson(resp);
-
+      const connectionId = await getConnectionId();
       const res = await fetch(`${API}/tables?connectionId=${connectionId}`);
-
       if (!res.ok) {
         setTables([]);
         return;
       }
-
       const data = await safeJson(res);
-
       setTables(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error(err);
-
       setTables([]);
     }
-  };
+  }, []);
 
   // =====================================================
   // LOAD TABLE DATA
@@ -204,22 +175,16 @@ const MigrateDB = () => {
 
   const loadTableData = async (tableName) => {
     try {
-      const resp = await fetch(`${API}/get-connection`);
-
-      const connectionId = await safeJson(resp);
-
+      const connectionId = await getConnectionId();
       setSelectedTable(tableName);
-
       const res = await fetch(
         `${API}/table/${tableName}?connectionId=${connectionId}`,
       );
-
       const data = await safeJson(res);
       console.log("Table Data:", data);
       setTableData(data);
     } catch (err) {
       console.error(err);
-
       setTableData([]);
     }
   };
@@ -231,7 +196,7 @@ const MigrateDB = () => {
   useEffect(() => {
     loadData();
     loadTables();
-  }, [loadData]);
+  }, [loadData, loadTables]);
 
   // =====================================================
   // MIGRATE
@@ -239,16 +204,11 @@ const MigrateDB = () => {
 
   const handleMigrate = async () => {
     try {
-      const resp = await fetch(`${API}/get-connection`);
-
-      const connectionId = await safeJson(resp);
-
+      const connectionId = await getConnectionId();
       setLoading(true);
-
       await fetch(`${API}/migrate?connectionId=${connectionId}`, {
         method: "POST",
       });
-
       await loadData();
       await loadTables();
     } catch (err) {
@@ -264,14 +224,10 @@ const MigrateDB = () => {
 
   const handleRollback = async () => {
     try {
-      const resp = await fetch(`${API}/get-connection`);
-
-      const connectionId = await safeJson(resp);
-
+      const connectionId = await getConnectionId();
       await fetch(`${API}/rollback?connectionId=${connectionId}`, {
         method: "POST",
       });
-
       await loadData();
       await loadTables();
     } catch (err) {
@@ -280,12 +236,13 @@ const MigrateDB = () => {
   };
 
   // =====================================================
-  // VALIDATE
+  // VALIDATE — now passes connectionId
   // =====================================================
 
   const handleValidate = async () => {
     try {
-      await fetch(`${API}/validate`, {
+      const connectionId = await getConnectionId();
+      await fetch(`${API}/validate?connectionId=${connectionId}`, {
         method: "POST",
       });
     } catch (err) {
@@ -294,15 +251,15 @@ const MigrateDB = () => {
   };
 
   // =====================================================
-  // REPAIR
+  // REPAIR — now passes connectionId
   // =====================================================
 
   const handleRepair = async () => {
     try {
-      await fetch(`${API}/repair`, {
+      const connectionId = await getConnectionId();
+      await fetch(`${API}/repair?connectionId=${connectionId}`, {
         method: "POST",
       });
-
       await loadData();
     } catch (err) {
       console.error(err);
@@ -310,13 +267,12 @@ const MigrateDB = () => {
   };
 
   // =====================================================
-  // CREATE MIGRATION
+  // CREATE MIGRATION (Manual)
   // =====================================================
 
   const createMigration = async () => {
     if (!migrationName || !migrationVersion) {
       alert("Please fill all fields");
-
       return;
     }
 
@@ -324,22 +280,14 @@ const MigrateDB = () => {
       setCreating(true);
 
       const params = new URLSearchParams();
-
       params.append("version", migrationVersion);
-
       params.append("description", migrationName);
-
       params.append("migrateUp", upSql);
-
       params.append("migrateDown", downSql);
 
       await fetch(`${API}/create`, {
         method: "POST",
-
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: params.toString(),
       });
 
@@ -347,12 +295,9 @@ const MigrateDB = () => {
 
       setMigrationName("");
       setMigrationVersion("");
-
       setUpSql("-- Write your UP SQL here\n");
-
       setDownSql("-- Write your DOWN SQL here\n");
-
-      setShowCreatePanel(false);
+      setShowManualPanel(false);
     } catch (err) {
       console.error(err);
     } finally {
@@ -360,6 +305,54 @@ const MigrateDB = () => {
     }
   };
 
+  const openMigrationScript = async (version) => {
+    try {
+      const connectionId = await getConnectionId();
+      const response = await fetch(`${API}/script/${version}?connectionId=${connectionId}`);
+
+      const script = await response.json();
+      console.log("Fetched script:", script);
+      setSelectedMigration(script);
+
+      setEditUpSql(script.upScript  || "");
+
+      setEditDownSql(script.downScript || "");
+
+      setShowScriptEditor(true);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const saveMigrationScript = async () => {
+    try {
+      const connectionId = await getConnectionId();
+      const response = await fetch(`${API}/script/update?connectionId=${connectionId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          version: selectedMigration.version,
+          migrateUp: editUpSql,
+          migrateDown: editDownSql,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save");
+      }
+
+      alert("Migration updated successfully");
+
+      setShowScriptEditor(false);
+
+      await loadData();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update migration");
+    }
+  };
   // =====================================================
   // FILTER DATA
   // =====================================================
@@ -385,12 +378,8 @@ const MigrateDB = () => {
   const filteredData = (
     Array.isArray(migrationData) ? migrationData : []
   ).filter((m) => {
-    if (!searchQuery.trim()) {
-      return true;
-    }
-
+    if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
-
     return (
       m.description?.toLowerCase().includes(q) ||
       String(m.version)?.toLowerCase().includes(q)
@@ -422,24 +411,19 @@ const MigrateDB = () => {
         />
 
         <main className="main-content">
-          {/* CONNECTIONS */}
-
           {activeView === "runHistory" ? (
             <RunHistory />
           ) : activeView === "connections" ? (
             <Connections />
           ) : activeView === "tables" ? (
             // TABLES VIEW
-
             <div className="tables-layout">
               <div className="tables-sidebar">
                 <h3>Database Tables</h3>
-
                 {(Array.isArray(tables) ? tables : []).map((table, index) => (
                   <button
                     key={index}
-                    className={`table-item ${selectedTable === table ? "active" : ""
-                      }`}
+                    className={`table-item ${selectedTable === table ? "active" : ""}`}
                     onClick={() => loadTableData(table)}
                   >
                     {table}
@@ -449,7 +433,6 @@ const MigrateDB = () => {
 
               <div className="tables-content">
                 <h2>{selectedTable || "Select Table"}</h2>
-
                 {tableData?.columns?.length > 0 ? (
                   <div className="table-details-card">
                     <div style={{ marginBottom: "20px" }}>
@@ -466,7 +449,6 @@ const MigrateDB = () => {
                         <strong>Columns:</strong> {tableData.columnCount}
                       </p>
                     </div>
-
                     <div className="table-container">
                       <table className="migration-table">
                         <thead>
@@ -477,7 +459,6 @@ const MigrateDB = () => {
                             <th>Primary Key</th>
                           </tr>
                         </thead>
-
                         <tbody>
                           {tableData.columns.map((column, index) => (
                             <tr key={index}>
@@ -494,13 +475,7 @@ const MigrateDB = () => {
                 ) : (
                   <div className="table-details-card">
                     <h2>{selectedTable || "Select Table"}</h2>
-
-                    <p
-                      style={{
-                        color: "#9ca3af",
-                        marginTop: "12px",
-                      }}
-                    >
+                    <p style={{ color: "#9ca3af", marginTop: "12px" }}>
                       No data available
                     </p>
                   </div>
@@ -510,7 +485,6 @@ const MigrateDB = () => {
           ) : (
             <>
               {/* TOOLBAR */}
-
               <div className="topnav">
                 <span className="toolbar-title">
                   {activeView === "pending"
@@ -523,31 +497,26 @@ const MigrateDB = () => {
                 <ToolbarButton
                   icon={<Plus size={14} />}
                   label="New Migration"
-                  onClick={() => setShowCreatePanel(!showCreatePanel)}
+                  onClick={() => setShowMigrationTypeModal(true)}
                 />
-
                 <ToolbarButton
                   icon={<ShieldCheck size={14} />}
                   label="Validate"
                   onClick={handleValidate}
                 />
-
                 <ToolbarButton
                   icon={<RotateCcw size={14} />}
                   label="Rollback"
                   variant="red"
                   onClick={handleRollback}
                 />
-
                 <div className="spacer" />
-
                 <ToolbarButton
                   icon={<Wrench size={14} />}
                   label="Repair"
                   variant="green"
                   onClick={handleRepair}
                 />
-
                 <ToolbarButton
                   icon={<ArrowDownToLine size={14} />}
                   label={loading ? "Migrating..." : "Migrate Now"}
@@ -558,73 +527,108 @@ const MigrateDB = () => {
               </div>
 
               {/* STATS */}
-
               <div className="stats-grid">
                 {stats.map((stat, i) => (
                   <StatCard key={i} {...stat} />
                 ))}
               </div>
 
-              {/* CONTENT */}
-
-              <div className="content-area">
-                {/* CREATE PANEL */}
-
-                <div
-                  className={`create-panel ${showCreatePanel ? "open" : ""}`}
-                >
-                  <h3>Create New Migration</h3>
-
-                  <input
-                    className="input"
-                    placeholder="Migration Name"
-                    value={migrationName}
-                    onChange={(e) => setMigrationName(e.target.value)}
-                  />
-
-                  <input
-                    className="input"
-                    placeholder="Version"
-                    value={migrationVersion}
-                    onChange={(e) => setMigrationVersion(e.target.value)}
-                  />
-
-                  <Editor
-                    height="160px"
-                    defaultLanguage="sql"
-                    theme={darkMode ? "vs-dark" : "light"}
-                    value={upSql}
-                    onChange={(v) => setUpSql(v || "")}
-                  />
-
-                  <Editor
-                    height="160px"
-                    defaultLanguage="sql"
-                    theme={darkMode ? "vs-dark" : "light"}
-                    value={downSql}
-                    onChange={(v) => setDownSql(v || "")}
-                  />
-
-                  <div className="panel-actions">
+              {/* MIGRATION TYPE MODAL */}
+              {showMigrationTypeModal && (
+                <div className="migration-type-modal">
+                  <div className="migration-type-card">
+                    <h3>Create Migration</h3>
+                    <button
+                      className="btn primary"
+                      onClick={() => {
+                        setShowMigrationTypeModal(false);
+                        setShowManualPanel(true);
+                      }}
+                    >
+                      Manual Query
+                    </button>
                     <button
                       className="btn"
-                      onClick={() => setShowCreatePanel(false)}
+                      onClick={() => {
+                        setShowMigrationTypeModal(false);
+                        setShowAutoBuilder(true);
+                      }}
+                    >
+                      Automated Builder
+                    </button>
+                    <button
+                      className="btn"
+                      onClick={() => setShowMigrationTypeModal(false)}
                     >
                       Cancel
                     </button>
-
-                    <button
-                      className="btn primary"
-                      onClick={createMigration}
-                      disabled={creating}
-                    >
-                      {creating ? "Creating..." : "Create Migration"}
-                    </button>
                   </div>
                 </div>
+              )}
+
+              {/* CONTENT */}
+              <div className="content-area">
+                {/* MANUAL MIGRATION PANEL — was "showCreatePanel", now correctly wired */}
+                {showManualPanel && (
+                  <div className="create-panel open">
+                    <h3>Create New Migration</h3>
+                    <input
+                      className="input"
+                      placeholder="Migration Name"
+                      value={migrationName}
+                      onChange={(e) => setMigrationName(e.target.value)}
+                    />
+                    <input
+                      className="input"
+                      placeholder="Version"
+                      value={migrationVersion}
+                      onChange={(e) => setMigrationVersion(e.target.value)}
+                    />
+                    <Editor
+                      height="160px"
+                      defaultLanguage="sql"
+                      theme={darkMode ? "vs-dark" : "light"}
+                      value={upSql}
+                      onChange={(v) => setUpSql(v || "")}
+                    />
+                    <Editor
+                      height="160px"
+                      defaultLanguage="sql"
+                      theme={darkMode ? "vs-dark" : "light"}
+                      value={downSql}
+                      onChange={(v) => setDownSql(v || "")}
+                    />
+                    <div className="panel-actions">
+                      <button
+                        className="btn"
+                        onClick={() => setShowManualPanel(false)}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        className="btn primary"
+                        onClick={createMigration}
+                        disabled={creating}
+                      >
+                        {creating ? "Creating..." : "Create Migration"}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* AUTO BUILDER PANEL */}
+                {showAutoBuilder && (
+                  <AutomatedMigrationBuilder
+                    onClose={() => setShowAutoBuilder(false)}
+                    onCreated={() => {
+                      setShowAutoBuilder(false);
+                      loadData();
+                    }}
+                    darkMode={darkMode}
+                  />
+                )}
 
                 {/* CONTENT HEADER */}
-
                 <div className="content-header">
                   <span>
                     {activeView === "pending"
@@ -633,12 +637,9 @@ const MigrateDB = () => {
                         ? "Applied Migrations"
                         : "All Migrations"}
                   </span>
-
                   <span className="badge">{filteredData.length} total</span>
-
                   <div className="search-box">
                     <Search size={12} className="search-icon" />
-
                     <input
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
@@ -648,8 +649,25 @@ const MigrateDB = () => {
                 </div>
 
                 {/* TABLE */}
-
-                <MigrationTable searchQuery={searchQuery} data={filteredData} />
+                <MigrationTable
+                  searchQuery={searchQuery}
+                  data={filteredData}
+                  onInfoClick={openMigrationScript}
+                  onRepairSuccess={loadData}
+                  onDeleteSuccess={loadData}
+                />
+                {showScriptEditor && (
+                  <MigrationScriptEditor
+                    migration={selectedMigration}
+                    upSql={editUpSql}
+                    downSql={editDownSql}
+                    setUpSql={setEditUpSql}
+                    setDownSql={setEditDownSql}
+                    darkMode={darkMode}
+                    onClose={() => setShowScriptEditor(false)}
+                    onSave={saveMigrationScript}
+                  />
+                )}
               </div>
             </>
           )}

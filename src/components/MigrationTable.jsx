@@ -1,187 +1,176 @@
-import React from 'react';
-import axios from 'axios';
-import { CheckCircle2, Trash2, Info } from 'lucide-react';
+import React from "react";
+import axios from "axios";
+import { CheckCircle2, Trash2, Info } from "lucide-react";
 import { useState } from "react";
-import '../MigrateDB.css';
+import "../MigrateDB.css";
 
 const API = "http://localhost:8081/api/migrations";
 
-const MigrationTable = ({ searchQuery = '', data = [], onRepairSuccess, onDeleteSuccess }) => {
-    const handleRepair = async (version) => {
-        try {
-            const { data: connectionId } = await axios.get(`${API}/get-connection`);
-            if (!connectionId) return;
+const MigrationTable = ({
+  searchQuery = "",
+  data = [],
+  onRepairSuccess,
+  onDeleteSuccess,
+  onInfoClick,
+}) => {
+  const handleRepair = async (version) => {
+    try {
+      const { data: connectionId } = await axios.get(`${API}/get-connection`);
+      if (!connectionId) return;
 
-            await axios.post(`${API}/repair`, null, {
-                params: { connectionId, versionId: version }
-            });
+      await axios.post(`${API}/repair`, null, {
+        params: { connectionId, versionId: version },
+      });
 
-            alert(`Migration ${version} repaired successfully`);
-            onRepairSuccess?.();
-        } catch (err) {
-            console.error(err);
-            alert('Repair failed');
-        }
-    };
+      alert(`Migration ${version} repaired successfully`);
+      onRepairSuccess?.();
+    } catch (err) {
+      console.error(err);
+      alert("Repair failed");
+    }
+  };
 
-    const handleDelete = async (version) => {
-        const confirmed = window.confirm(`Are you sure you want to delete migration ${version}?`);
-        if (!confirmed) return;
-
-        try {
-            const { data: connectionId } = await axios.get(`${API}/get-connection`);
-            if (!connectionId) return;
-
-            await axios.delete(`${API}/delete`, {
-                params: { connectionId, versionId: version }
-            });
-
-            alert(`Migration ${version} deleted successfully`);
-            onDeleteSuccess?.();
-        } catch (err) {
-            console.error(err);
-            alert('Delete failed');
-        }
-    };
-    const handleValidate = async (version) => {
-        try {
-            const { data: connectionId } = await axios.get(
-                `${API}/get-connection`
-            );
-
-            if (!connectionId) return;
-
-            const response = await axios.post(
-                `${API}/validate`,
-                null,
-                {
-                    params: {
-                        connectionId,
-                        versionId: version
-                    }
-                }
-            );
-
-            alert(
-                response.data?.message ||
-                `Validation successful for ${version}`
-            );
-        } catch (err) {
-            console.error(err);
-            alert(`Validation failed for ${version}`);
-        }
-    };
-    const handleInfo = (migration) => {
-        const details = `
-Version: ${migration.version || "N/A"}
-Description: ${migration.description || "N/A"}
-Status: ${migration.success ? "Applied" : "Failed"}
-Applied On: ${migration.executedAt || "N/A"}
-Duration: ${migration.executionTime || 0} ms
-`;
-
-        alert(details);
-    };
-
-    const query = searchQuery.toLowerCase();
-    const filteredData = data.filter(item =>
-        item.description?.toLowerCase().includes(query) ||
-        item.version?.toLowerCase().includes(query)
+  const handleDelete = async (version) => {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete migration ${version}?`,
     );
+    if (!confirmed) return;
 
-    return (
-        <div className="table-container">
-            <table className="migration-table">
-                <thead>
-                    <tr>
-                        <th className="col-icon" scope="col"></th>
-                        <th scope="col">Version</th>
-                        <th scope="col">Description</th>
-                        <th scope="col">Applied On</th>
-                        <th scope="col">Duration</th>
-                        <th scope="col">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {filteredData.length === 0 ? (
-                        <tr>
-                            <td colSpan="6" className="no-data">
-                                No migrations found
-                            </td>
-                        </tr>
-                    ) : (
-                        filteredData.map((row) => (
-                            <tr key={row.version} className="table-row">
-                                <td className="cell-icon">
-                                    {row.success ? (
-                                        <CheckCircle2 size={14} className="icon-success" />
-                                    ) : (
-                                        <div className="dot-pending" />
-                                    )}
-                                </td>
-                                <td className="mono text-dim">
-                                    {row.version ? `V${row.version}` : '-'}
-                                </td>
-                                <td className="text-main">{row.description || '-'}</td>
-                                <td className="mono text-muted">{row.executedAt || '-'}</td>
-                                <td className="mono text-muted">
-                                    {row.executionTime ? `${row.executionTime} ms` : '-'}
-                                </td>
+    try {
+      const { data: connectionId } = await axios.get(`${API}/get-connection`);
+      if (!connectionId) return;
 
-                                <td>
-                                    <div className="status-cell">
-                                        <span
-                                            className={`status-badge ${row.success ? "success" : "failed"
-                                                }`}
-                                        >
-                                            {row.success ? "Applied" : "Failed"}
-                                        </span>
+      await axios.delete(`${API}/delete`, {
+        params: { connectionId, versionId: version },
+      });
 
-                                        <div className="action-buttons">
-                                            <button
-                                                className="info-btn"
-                                                onClick={() => handleInfo(row)}
-                                                title="Migration Details"
-                                            >
-                                                <Info size={14} />
-                                            </button>
+      alert(`Migration ${version} deleted successfully`);
+      onDeleteSuccess?.();
+    } catch (err) {
+      console.error(err);
+      alert("Delete failed");
+    }
+  };
+  const handleValidate = async (version) => {
+    try {
+      const { data: connectionId } = await axios.get(`${API}/get-connection`);
 
-                                            {!row.success && (
-                                                <>
-                                                    <button
-                                                        className="validate-btn"
-                                                        onClick={() => handleValidate(row.version)}
-                                                    >
-                                                        Validate
-                                                    </button>
+      if (!connectionId) return;
 
-                                                    <button
-                                                        className="repair-btn"
-                                                        onClick={() => handleRepair(row.version)}
-                                                    >
-                                                        Repair
-                                                    </button>
-                                                </>
-                                            )}
+      const response = await axios.post(`${API}/validate`, null, {
+        params: {
+          connectionId,
+          versionId: version,
+        },
+      });
 
-                                            <button
-                                                className="delete-btn"
-                                                onClick={() => handleDelete(row.version)}
-                                                title="Delete Migration"
-                                            >
-                                                <Trash2 size={14} />
-                                            </button>
-                                        </div>
-                                    </div>
-                                </td>
+      alert(response.data?.message || `Validation successful for ${version}`);
+    } catch (err) {
+      console.error(err);
+      alert(`Validation failed for ${version}`);
+    }
+  };
 
-                            </tr>
-                        ))
-                    )}
-                </tbody>
-            </table>
-        </div>
-    );
+  const query = searchQuery.toLowerCase();
+  const filteredData = data.filter(
+    (item) =>
+      item.description?.toLowerCase().includes(query) ||
+      item.version?.toLowerCase().includes(query),
+  );
+
+  return (
+    <div className="table-container">
+      <table className="migration-table">
+        <thead>
+          <tr>
+            <th className="col-icon" scope="col"></th>
+            <th scope="col">Version</th>
+            <th scope="col">Description</th>
+            <th scope="col">Applied On</th>
+            <th scope="col">Duration</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredData.length === 0 ? (
+            <tr>
+              <td colSpan="6" className="no-data">
+                No migrations found
+              </td>
+            </tr>
+          ) : (
+            filteredData.map((row) => (
+              <tr key={row.version} className="table-row">
+                <td className="cell-icon">
+                  {row.success ? (
+                    <CheckCircle2 size={14} className="icon-success" />
+                  ) : (
+                    <div className="dot-pending" />
+                  )}
+                </td>
+                <td className="mono text-dim">
+                  {row.version ? `V${row.version}` : "-"}
+                </td>
+                <td className="text-main">{row.description || "-"}</td>
+                <td className="mono text-muted">{row.executedAt || "-"}</td>
+                <td className="mono text-muted">
+                  {row.executionTime ? `${row.executionTime} ms` : "-"}
+                </td>
+
+                <td>
+                  <div className="status-cell">
+                    <span
+                      className={`status-badge ${
+                        row.success ? "success" : "failed"
+                      }`}
+                    >
+                      {row.success ? "Applied" : "Failed"}
+                    </span>
+
+                    <div className="action-buttons">
+                      <button
+                        className="info-btn"
+                        onClick={() => onInfoClick?.(row.version)}
+                        title="View Script"
+                      >
+                        <Info size={14} />
+                      </button>
+
+                      {!row.success && (
+                        <>
+                          <button
+                            className="validate-btn"
+                            onClick={() => handleValidate(row.version)}
+                          >
+                            Validate
+                          </button>
+
+                          <button
+                            className="repair-btn"
+                            onClick={() => handleRepair(row.version)}
+                          >
+                            Repair
+                          </button>
+                        </>
+                      )}
+
+                      <button
+                        className="delete-btn"
+                        onClick={() => handleDelete(row.version)}
+                        title="Delete Migration"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
 };
 
 export default MigrationTable;
