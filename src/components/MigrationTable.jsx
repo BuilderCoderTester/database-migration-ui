@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
-import { CheckCircle2, Trash2 } from 'lucide-react';
+import { CheckCircle2, Trash2, Info } from 'lucide-react';
+import { useState } from "react";
 import '../MigrateDB.css';
 
 const API = "http://localhost:8081/api/migrations";
@@ -41,6 +42,45 @@ const MigrationTable = ({ searchQuery = '', data = [], onRepairSuccess, onDelete
             console.error(err);
             alert('Delete failed');
         }
+    };
+    const handleValidate = async (version) => {
+        try {
+            const { data: connectionId } = await axios.get(
+                `${API}/get-connection`
+            );
+
+            if (!connectionId) return;
+
+            const response = await axios.post(
+                `${API}/validate`,
+                null,
+                {
+                    params: {
+                        connectionId,
+                        versionId: version
+                    }
+                }
+            );
+
+            alert(
+                response.data?.message ||
+                `Validation successful for ${version}`
+            );
+        } catch (err) {
+            console.error(err);
+            alert(`Validation failed for ${version}`);
+        }
+    };
+    const handleInfo = (migration) => {
+        const details = `
+Version: ${migration.version || "N/A"}
+Description: ${migration.description || "N/A"}
+Status: ${migration.success ? "Applied" : "Failed"}
+Applied On: ${migration.executedAt || "N/A"}
+Duration: ${migration.executionTime || 0} ms
+`;
+
+        alert(details);
     };
 
     const query = searchQuery.toLowerCase();
@@ -87,30 +127,54 @@ const MigrationTable = ({ searchQuery = '', data = [], onRepairSuccess, onDelete
                                 <td className="mono text-muted">
                                     {row.executionTime ? `${row.executionTime} ms` : '-'}
                                 </td>
+
                                 <td>
                                     <div className="status-cell">
-                                        <span className={`status-badge ${row.success ? 'success' : 'failed'}`}>
-                                            {row.success ? 'Applied' : 'Failed'}
+                                        <span
+                                            className={`status-badge ${row.success ? "success" : "failed"
+                                                }`}
+                                        >
+                                            {row.success ? "Applied" : "Failed"}
                                         </span>
-                                        {!row.success && (
-                                            <div className="action-buttons">
-                                                <button 
-                                                    className="repair-btn"
-                                                    onClick={() => handleRepair(row.version)}
-                                                >
-                                                    Repair
-                                                </button>
-                                                <button 
-                                                    className="delete-btn"
-                                                    onClick={() => handleDelete(row.version)}
-                                                    title="Delete migration"
-                                                >
-                                                    <Trash2 size={14} />
-                                                </button>
-                                            </div>
-                                        )}
+
+                                        <div className="action-buttons">
+                                            <button
+                                                className="info-btn"
+                                                onClick={() => handleInfo(row)}
+                                                title="Migration Details"
+                                            >
+                                                <Info size={14} />
+                                            </button>
+
+                                            {!row.success && (
+                                                <>
+                                                    <button
+                                                        className="validate-btn"
+                                                        onClick={() => handleValidate(row.version)}
+                                                    >
+                                                        Validate
+                                                    </button>
+
+                                                    <button
+                                                        className="repair-btn"
+                                                        onClick={() => handleRepair(row.version)}
+                                                    >
+                                                        Repair
+                                                    </button>
+                                                </>
+                                            )}
+
+                                            <button
+                                                className="delete-btn"
+                                                onClick={() => handleDelete(row.version)}
+                                                title="Delete Migration"
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
+                                        </div>
                                     </div>
                                 </td>
+
                             </tr>
                         ))
                     )}
