@@ -30,6 +30,22 @@ const MigrationTable = ({
     }
   };
 
+  const handleMigrate = async (version) => {
+    try {
+      const { data: connectionId } = await axios.get(`${API}/get-connection`);
+      if (!connectionId) return;
+
+      await axios.post(`${API}/script/migrate`, null, {
+        params: { connectionId, versionId: version },
+      });
+
+      alert(`Migration ${version} migrated successfully`);
+      onRepairSuccess?.();
+    } catch (err) {
+      console.error(err);
+      alert("Migration failed");
+    }
+  };
   const handleDelete = async (version) => {
     const confirmed = window.confirm(
       `Are you sure you want to delete migration ${version}?`,
@@ -150,6 +166,13 @@ const MigrationTable = ({
                             onClick={() => handleRepair(row.version)}
                           >
                             Repair
+                          </button>
+
+                          <button
+                            className="migrate-btn"
+                            onClick={() => handleMigrate(row.version)}
+                          >
+                            Migrate
                           </button>
                         </>
                       )}

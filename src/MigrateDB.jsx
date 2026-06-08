@@ -78,7 +78,7 @@ const MigrateDB = () => {
   const [migrationVersion, setMigrationVersion] = useState("");
   const [creating, setCreating] = useState(false);
   const [showScriptEditor, setShowScriptEditor] = useState(false);
-
+  const [version , setVersion] = useState("-- Version: ");
   const [selectedMigration, setSelectedMigration] = useState(null);
 
   const [editUpSql, setEditUpSql] = useState("");
@@ -317,42 +317,46 @@ const MigrateDB = () => {
       setEditUpSql(script.upScript  || "");
 
       setEditDownSql(script.downScript || "");
-
+      setVersion(script.version ||" ");
       setShowScriptEditor(true);
     } catch (err) {
       console.error(err);
     }
   };
 
-  const saveMigrationScript = async () => {
-    try {
-      const connectionId = await getConnectionId();
-      const response = await fetch(`${API}/script/update?connectionId=${connectionId}`, {
+ const saveMigrationScript = async () => {
+  try {
+    const connectionId = await getConnectionId();
+
+    const response = await fetch(
+      `${API}/script/update?connectionId=${connectionId}&upSql=${encodeURIComponent(
+        editUpSql
+      )}&downSql=${encodeURIComponent(editDownSql)}`,
+      {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          version: selectedMigration.version,
-          migrateUp: editUpSql,
-          migrateDown: editDownSql,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to save");
+        body: JSON.stringify(selectedMigration.version),
       }
+    );
 
-      alert("Migration updated successfully");
+    const message = await response.text();
 
-      setShowScriptEditor(false);
-
-      await loadData();
-    } catch (err) {
-      console.error(err);
-      alert("Failed to update migration");
+    if (!response.ok) {
+      throw new Error(message || "Failed to save migration");
     }
-  };
+
+    alert(message || "Migration updated successfully");
+
+    setShowScriptEditor(false);
+
+    await loadData();
+  } catch (err) {
+    console.error("Save migration error:", err);
+    alert(err.message || "Failed to update migration");
+  }
+};
   // =====================================================
   // FILTER DATA
   // =====================================================
