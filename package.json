@@ -36,15 +36,21 @@
     "wait-on": "^9.0.5"
   },
   "build": {
-    "appId": "com.migratedb.app",
-    "productName": "MigrateDB",
-    "files": [
-      "dist/**/*",
-      "electron/**/*",
-      "backend/app.jar"
-    ],
-    "win": {
-      "target": "nsis"
+  "appId": "com.migratedb.app",
+  "productName": "MigrateDB",
+  "files": [
+    "dist/**/*",
+    "main.cjs",
+    "package.json"
+  ],
+  "extraResources": [
+    {
+      "from": "backend",
+      "to": "backend"
     }
+  ],
+  "win": {
+    "target": "nsis"
   }
+}
 }

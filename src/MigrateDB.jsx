@@ -78,7 +78,7 @@ const MigrateDB = () => {
   const [migrationVersion, setMigrationVersion] = useState("");
   const [creating, setCreating] = useState(false);
   const [showScriptEditor, setShowScriptEditor] = useState(false);
-  const [version , setVersion] = useState("-- Version: ");
+  const [version, setVersion] = useState("-- Version: ");
   const [selectedMigration, setSelectedMigration] = useState(null);
 
   const [editUpSql, setEditUpSql] = useState("");
@@ -271,7 +271,7 @@ const MigrateDB = () => {
   // =====================================================
 
   const createMigration = async () => {
-    if (!migrationName || !migrationVersion) {
+    if (!migrationName) {
       alert("Please fill all fields");
       return;
     }
@@ -280,7 +280,7 @@ const MigrateDB = () => {
       setCreating(true);
 
       const params = new URLSearchParams();
-      params.append("version", migrationVersion);
+      // version removed — backend handles it
       params.append("description", migrationName);
       params.append("migrateUp", upSql);
       params.append("migrateDown", downSql);
@@ -293,11 +293,14 @@ const MigrateDB = () => {
 
       await loadData();
 
+      // Clear fields and refresh version
       setMigrationName("");
-      setMigrationVersion("");
       setUpSql("-- Write your UP SQL here\n");
       setDownSql("-- Write your DOWN SQL here\n");
       setShowManualPanel(false);
+
+      // Fetch next version for next time
+      await fetchLatestVersion();
     } catch (err) {
       console.error(err);
     } finally {
@@ -305,58 +308,78 @@ const MigrateDB = () => {
     }
   };
 
+  const fetchLatestVersion = async () => {
+    try {
+      const response = await fetch(`${API}/latest-version`);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to fetch version");
+      }
+
+      const data = await response.json();
+      console.log(data)
+      setMigrationVersion(String(data || "1"));
+    } catch (error) {
+      console.error("Error fetching version:", error);
+      setMigrationVersion("1");
+    }
+  };
+
   const openMigrationScript = async (version) => {
     try {
       const connectionId = await getConnectionId();
-      const response = await fetch(`${API}/script/${version}?connectionId=${connectionId}`);
+      const response = await fetch(
+        `${API}/script/${version}?connectionId=${connectionId}`,
+      );
 
       const script = await response.json();
       console.log("Fetched script:", script);
       setSelectedMigration(script);
 
-      setEditUpSql(script.upScript  || "");
+      setEditUpSql(script.upScript || "");
 
       setEditDownSql(script.downScript || "");
-      setVersion(script.version ||" ");
+      setVersion(script.version || " ");
       setShowScriptEditor(true);
     } catch (err) {
       console.error(err);
     }
   };
 
- const saveMigrationScript = async () => {
-  try {
-    const connectionId = await getConnectionId();
+  const saveMigrationScript = async () => {
+    try {
+      const connectionId = await getConnectionId();
 
-    const response = await fetch(
-      `${API}/script/update?connectionId=${connectionId}&upSql=${encodeURIComponent(
-        editUpSql
-      )}&downSql=${encodeURIComponent(editDownSql)}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${API}/script/update?connectionId=${connectionId}&upSql=${encodeURIComponent(
+          editUpSql,
+        )}&downSql=${encodeURIComponent(editDownSql)}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(selectedMigration.version),
         },
-        body: JSON.stringify(selectedMigration.version),
+      );
+
+      const message = await response.text();
+
+      if (!response.ok) {
+        throw new Error(message || "Failed to save migration");
       }
-    );
 
-    const message = await response.text();
+      alert(message || "Migration updated successfully");
 
-    if (!response.ok) {
-      throw new Error(message || "Failed to save migration");
+      setShowScriptEditor(false);
+
+      await loadData();
+    } catch (err) {
+      console.error("Save migration error:", err);
+      alert(err.message || "Failed to update migration");
     }
-
-    alert(message || "Migration updated successfully");
-
-    setShowScriptEditor(false);
-
-    await loadData();
-  } catch (err) {
-    console.error("Save migration error:", err);
-    alert(err.message || "Failed to update migration");
-  }
-};
+  };
   // =====================================================
   // FILTER DATA
   // =====================================================
@@ -582,12 +605,12 @@ const MigrateDB = () => {
                       value={migrationName}
                       onChange={(e) => setMigrationName(e.target.value)}
                     />
-                    <input
+                    {/* <input
                       className="input"
                       placeholder="Version"
                       value={migrationVersion}
-                      onChange={(e) => setMigrationVersion(e.target.value)}
-                    />
+                      readOnly
+                    /> */}
                     <Editor
                       height="160px"
                       defaultLanguage="sql"

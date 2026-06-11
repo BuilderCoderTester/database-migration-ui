@@ -6,7 +6,9 @@ const http = require("http");
 let backendProcess;
 
 function startBackend() {
-  const jarPath = path.join(__dirname, "../backend/demo/target/Migration-0.0.2.jar");
+const jarPath = app.isPackaged
+  ? path.join(process.resourcesPath, "backend", "Migration-0.0.2.jar")
+  : path.join(__dirname, "backend", "Migration-0.0.2.jar");
 console.log("__dirname:", __dirname);
   backendProcess = spawn('java', ['-jar', jarPath]);
 
@@ -21,7 +23,7 @@ console.log("__dirname:", __dirname);
 
 function waitForBackend(callback) {
   const check = () => {
-    http.get("http://localhost:8080", () => {
+    http.get("http://localhost:8081", () => {
       console.log("Backend ready ✅");
       callback();
     }).on("error", () => {
@@ -39,7 +41,7 @@ function createWindow() {
     backgroundColor: "#0d0f12"
   });
 
-  const indexPath = path.join(__dirname, '../Frontend/dist/index.html');
+ const indexPath = path.join(__dirname, "dist", "index.html");
   console.log("the fronetnd : ",__dirname);
   win.loadFile(indexPath);
 }
