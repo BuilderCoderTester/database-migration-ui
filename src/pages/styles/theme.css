@@ -1,0 +1,197 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ============================================================
+   RESET
+   ============================================================ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ============================================================
+   LIGHT THEME (default)
+   ============================================================ */
+:root,
+.migrate-container {
+  /* Core Palette */
+  --primary:        #2563EB;
+  --primary-hover:  #1D4ED8;
+  --primary-light:  #3B82F6;
+  --primary-bg:     #EFF6FF;
+  --primary-border: #BFDBFE;
+
+  --background:     #F8FAFC;
+  --surface:        #FFFFFF;
+  --surface-2:      #F8FAFC;
+  --surface-3:      #F1F5F9;
+
+  --border:         #E2E8F0;
+  --border-2:       #CBD5E1;
+
+  --text:           #0F172A;
+  --text-2:         #334155;
+  --text-3:         #64748B;
+  --text-muted:     #94A3B8;
+
+  /* Semantic Colors */
+  --success:        #16A34A;
+  --success-bg:     #DCFCE7;
+  --success-border: #86EFAC;
+  --success-text:   #15803D;
+
+  --warning:        #D97706;
+  --warning-bg:     #FEF3C7;
+  --warning-border: #FCD34D;
+  --warning-text:   #B45309;
+
+  --danger:         #DC2626;
+  --danger-bg:      #FEE2E2;
+  --danger-border:  #FCA5A5;
+  --danger-text:    #B91C1C;
+
+  --info:           #0EA5E9;
+  --info-bg:        #E0F2FE;
+  --info-border:    #7DD3FC;
+
+  --purple:         #7C3AED;
+  --purple-bg:      #F5F3FF;
+  --purple-border:  #C4B5FD;
+
+  --teal:           #0D9488;
+  --teal-bg:        #F0FDFA;
+  --teal-border:    #99F6E4;
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Fira Code', monospace;
+
+  /* Shadows */
+  --shadow-sm:  0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md:  0 4px 12px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.05);
+  --shadow-lg:  0 8px 28px rgba(15, 23, 42, 0.10), 0 4px 12px rgba(15, 23, 42, 0.06);
+  --shadow-xl:  0 20px 60px rgba(15, 23, 42, 0.14), 0 8px 24px rgba(15, 23, 42, 0.08);
+  --shadow-primary: 0 8px 24px rgba(37, 99, 235, 0.20);
+
+  /* Border Radius */
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  16px;
+  --radius-xl:  20px;
+  --radius-full: 999px;
+
+  /* Spacing */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-7:  28px;
+  --space-8:  32px;
+
+  /* Transitions */
+  --transition-fast:   0.15s ease;
+  --transition-base:   0.20s ease;
+  --transition-slow:   0.30s ease;
+
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--text);
+  background: var(--background);
+}
+
+/* ============================================================
+   DARK THEME
+   ============================================================ */
+.migrate-container.dark,
+.dark {
+  --primary:        #3B82F6;
+  --primary-hover:  #2563EB;
+  --primary-light:  #60A5FA;
+  --primary-bg:     #1E3A5F;
+  --primary-border: #1E40AF;
+
+  --background:     #0A0F1A;
+  --surface:        #111827;
+  --surface-2:      #1A2235;
+  --surface-3:      #1F2D45;
+
+  --border:         #1E293B;
+  --border-2:       #273449;
+
+  --text:           #F1F5F9;
+  --text-2:         #CBD5E1;
+  --text-3:         #94A3B8;
+  --text-muted:     #64748B;
+
+  --success:        #22C55E;
+  --success-bg:     #052E16;
+  --success-border: #166534;
+  --success-text:   #4ADE80;
+
+  --warning:        #F59E0B;
+  --warning-bg:     #1C1400;
+  --warning-border: #78350F;
+  --warning-text:   #FCD34D;
+
+  --danger:         #EF4444;
+  --danger-bg:      #1C0404;
+  --danger-border:  #7F1D1D;
+  --danger-text:    #FCA5A5;
+
+  --info:           #38BDF8;
+  --info-bg:        #082F49;
+  --info-border:    #075985;
+
+  --purple:         #A78BFA;
+  --purple-bg:      #1E1040;
+  --purple-border:  #4C1D95;
+
+  --teal:           #2DD4BF;
+  --teal-bg:        #042F2E;
+  --teal-border:    #134E4A;
+
+  --shadow-sm:  0 1px 3px rgba(0, 0, 0, 0.30);
+  --shadow-md:  0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-lg:  0 8px 28px rgba(0, 0, 0, 0.40);
+  --shadow-xl:  0 20px 60px rgba(0, 0, 0, 0.50);
+  --shadow-primary: 0 8px 24px rgba(59, 130, 246, 0.25);
+}
+
+/* ============================================================
+   GLOBAL BASE STYLES
+   ============================================================ */
+.migrate-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--background);
+  transition: background var(--transition-slow), color var(--transition-slow);
+}
+
+/* ============================================================
+   SHARED BADGE SYSTEM
+   ============================================================ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  line-height: 1.4;
+  border: 1px solid transparent;
+}
+
+.badge-blue   { background: var(--primary-bg);   color: var(--primary);  border-color: var(--primary-border); }
+.badge-green  { background: var(--success-bg);   color: var(--success-text); border-color: var(--success-border); }
+.badge-amber  { background: var(--warning-bg);   color: var(--warning-text); border-color: var(--warning-border); }
+.badge-red    { background: var(--danger-bg);    color: var(--danger-text);  border-color: var(--danger-border); }
+.badge-purple { background: var(--purple-bg);    color: var(--purple);       border-color: var(--purple-border); }
+.badge-teal   { background: var(--teal-bg);      color: var(--teal);         border-color: var(--teal-border); }
+.badge-info   { background: var(--info-bg);      color: var(--info);         border-color: var(--info-border); }
+

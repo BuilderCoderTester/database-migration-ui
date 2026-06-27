@@ -2,7 +2,7 @@ import React from "react";
 import axios from "axios";
 import { CheckCircle2, Trash2, Info } from "lucide-react";
 import { useState } from "react";
-import "../MigrateDB.css";
+import "../../styles/toggle/migration/MigrationTable.css";
 
 const API = "http://localhost:8081/api/migrations";
 
@@ -35,7 +35,7 @@ const MigrationTable = ({
       const { data: connectionId } = await axios.get(`${API}/get-connection`);
       if (!connectionId) return;
 
-      await axios.post(`${API}/script/migrate`, null, {
+      await axios.post(`${API}/migrate`, null, {
         params: { connectionId, versionId: version },
       });
 
@@ -44,6 +44,23 @@ const MigrationTable = ({
     } catch (err) {
       console.error(err);
       alert("Migration failed");
+    }
+  };
+
+  const handleUpdate = async (version) => {
+    try {
+      const { data: connectionId } = await axios.get(`${API}/get-connection`);
+      if (!connectionId) return;
+
+      await axios.post(`${API}/script/migrate`, null, {
+        params: { connectionId, versionId: version },
+      });
+
+      alert(`Migration ${version} migrated and updated successfully`);
+      onRepairSuccess?.();
+    } catch (err) {
+      console.error(err);
+      alert("Migration Updation failed");
     }
   };
   const handleDelete = async (version) => {
@@ -116,7 +133,7 @@ const MigrationTable = ({
             </tr>
           ) : (
             filteredData.map((row) => (
-              <tr key={row.version} className="table-row">
+              <tr key={row.version} className="migration-row">
                 <td className="cell-icon">
                   {row.success ? (
                     <CheckCircle2 size={14} className="icon-success" />
@@ -168,6 +185,13 @@ const MigrationTable = ({
                             Repair
                           </button>
 
+                          <button
+                            className="repair-btn"
+                            onClick={() => handleUpdate(row.version)}
+                          >
+                            Update
+                          </button>
+                          
                           <button
                             className="migrate-btn"
                             onClick={() => handleMigrate(row.version)}

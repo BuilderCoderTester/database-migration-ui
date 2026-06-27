@@ -1,0 +1,97 @@
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+.action-button {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    padding: 18px 20px;
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-lg);
+
+    cursor: pointer;
+
+    transition: all .2s ease;
+
+    text-align: left;
+}
+
+.action-button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.action-button:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+.action-button-icon {
+    width: 46px;
+    height: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    flex-shrink: 0;
+}
+
+.action-button.primary .action-button-icon {
+    background: var(--primary-bg);
+    color: var(--primary);
+}
+
+.action-button.success .action-button-icon {
+    background: var(--success-bg);
+    color: var(--success);
+}
+
+.action-button.warning .action-button-icon {
+    background: var(--warning-bg);
+    color: var(--warning);
+}
+
+.action-button.danger .action-button-icon {
+    background: var(--danger-bg);
+    color: var(--danger);
+}
+
+.action-button-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.action-button-content h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.action-button-content span {
+    font-size: 12px;
+    color: var(--text-3);
+}
+
+@media (max-width: 1200px) {
+    .quick-actions {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 700px) {
+    .quick-actions {
+        grid-template-columns: 1fr;
+    }
+}

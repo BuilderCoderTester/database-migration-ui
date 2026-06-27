@@ -1,5 +1,4 @@
-import MigrateDB from "./MigrateDB.jsx";
-
+import MigrateDB from "./pages/MigrateDb/MigrateDB"
 
 function App() {
 

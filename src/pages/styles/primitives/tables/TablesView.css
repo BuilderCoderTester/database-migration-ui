@@ -1,0 +1,241 @@
+/* ============================================================
+   TablesView.css
+   ============================================================ */
+
+.tables-layout {
+  display: flex;
+  gap: 20px;
+  height: 100%;
+}
+
+/* ============================================================
+   Sidebar
+   ============================================================ */
+
+.tables-sidebar {
+  width: 250px;
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  padding: 18px;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+
+  overflow-y: auto;
+
+  box-shadow: var(--shadow-sm);
+}
+
+.tables-sidebar-header {
+  padding-bottom: 14px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tables-sidebar h3 {
+  margin: 0;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  color: var(--text);
+}
+
+.empty-table-list {
+  padding: 24px 12px;
+
+  text-align: center;
+
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.table-item {
+  width: 100%;
+
+  padding: 10px 14px;
+
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+
+  background: transparent;
+
+  text-align: left;
+
+  color: var(--text-3);
+
+  cursor: pointer;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  transition: all var(--transition-fast);
+}
+
+.table-item:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.table-item.active {
+  background: var(--primary-bg);
+  border-color: var(--primary-border);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* ============================================================
+   Content
+   ============================================================ */
+
+.tables-content {
+  flex: 1;
+  min-width: 0;
+
+  padding: 24px;
+
+  background: var(--surface);
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+
+  overflow: auto;
+
+  box-shadow: var(--shadow-sm);
+}
+
+.table-details-card {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding-bottom: 18px;
+
+  border-bottom: 1px solid var(--border);
+}
+
+.table-header h2 {
+  margin: 0;
+
+  font-size: 22px;
+  font-weight: 700;
+
+  color: var(--text);
+}
+
+.table-header span {
+  display: block;
+  margin-top: 4px;
+
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* ============================================================
+   Summary Cards
+   ============================================================ */
+
+.table-summary {
+  display: flex;
+  gap: 16px;
+}
+
+.summary-card {
+  flex: 1;
+
+  padding: 18px;
+
+  background: var(--surface-2);
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.summary-card span {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.summary-card strong {
+  font-size: 24px;
+  font-weight: 700;
+
+  color: var(--text);
+}
+
+/* ============================================================
+   Table
+   ============================================================ */
+
+.table-container {
+  overflow-x: auto;
+}
+
+.migration-table {
+  width: 100%;
+
+  border-collapse: collapse;
+}
+
+.migration-table thead {
+  background: var(--surface-2);
+}
+
+.migration-table th {
+  padding: 14px 16px;
+
+  text-align: left;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  color: var(--text);
+
+  border-bottom: 1px solid var(--border);
+}
+
+.migration-table td {
+  padding: 14px 16px;
+
+  font-size: 13px;
+
+  color: var(--text-2);
+
+  border-bottom: 1px solid var(--border);
+}
+
+.migration-table tbody tr {
+  transition: background var(--transition-fast);
+}
+
+.migration-table tbody tr:hover {
+  background: var(--surface-2);
+}
+
+/* ============================================================
+   Empty State
+   ============================================================ */
+
+.table-details-card h2 {
+  margin: 0;
+}
+
+.table-details-card p {
+  margin: 0;
+
+  color: var(--text-muted);
+}
