@@ -1,0 +1,235 @@
+/* ==========================================================
+   Dashboard Page
+========================================================== */
+
+.dashboard-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  padding: 24px;
+
+  width: 100%;
+  min-height: 100%;
+}
+
+/* ==========================================================
+   Dashboard Grid
+========================================================== */
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+/* ==========================================================
+   Dashboard Card
+========================================================== */
+
+.dashboard-card {
+  background: var(--surface);
+
+  border: 1px solid var(--border);
+
+  border-radius: var(--radius-lg);
+
+  box-shadow: var(--shadow-sm);
+
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+
+  min-height: 340px;
+}
+
+/* ==========================================================
+   Card Header
+========================================================== */
+
+.dashboard-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 20px 24px;
+
+  border-bottom: 1px solid var(--border);
+
+  background: var(--surface-2);
+}
+
+.dashboard-card-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.dashboard-card-header span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 32px;
+  height: 32px;
+
+  padding: 0 10px;
+
+  border-radius: var(--radius-full);
+
+  background: var(--primary-bg);
+
+  color: var(--primary);
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* ==========================================================
+   List
+========================================================== */
+
+.dashboard-list {
+  display: flex;
+  flex-direction: column;
+
+  padding: 10px;
+}
+
+/* ==========================================================
+   List Item
+========================================================== */
+
+.dashboard-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 20px;
+
+  padding: 16px;
+
+  border-radius: var(--radius-md);
+
+  transition: background var(--transition-base);
+}
+
+.dashboard-list-item:hover {
+  background: var(--surface-2);
+}
+
+.dashboard-list-item strong {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: var(--text);
+
+  font-size: 14px;
+
+  font-family: var(--font-mono);
+}
+
+.dashboard-list-item p {
+  color: var(--text-3);
+
+  font-size: 13px;
+
+  line-height: 1.5;
+}
+
+/* ==========================================================
+   Empty State
+========================================================== */
+
+.dashboard-empty {
+  flex: 1;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  color: var(--text-muted);
+
+  font-size: 14px;
+
+  padding: 40px;
+}
+
+/* ==========================================================
+   Activity Log Container
+========================================================== */
+
+.dashboard-page .activity-log {
+  width: 100%;
+}
+
+/* ==========================================================
+   Responsive
+========================================================== */
+
+@media (max-width: 1200px) {
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+@media (max-width: 768px) {
+
+  .dashboard-page {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .dashboard-card-header {
+    padding: 16px;
+  }
+
+  .dashboard-list-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+}
+
+@media (max-width: 480px) {
+
+  .dashboard-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+}
+.dashboard-full-width {
+    grid-column: 1 / -1;
+}
+
+.dashboard-overview {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 24px;
+}
+
+.overview-item {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px;
+}
+
+.overview-item span {
+    display: block;
+    color: var(--text-3);
+    margin-bottom: 8px;
+}
+
+.overview-item strong {
+    font-size: 28px;
+    color: var(--text);
+}

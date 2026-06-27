@@ -1,0 +1,317 @@
+/* ==========================================================
+   ActivityLog.css
+   ========================================================== */
+
+.activity-panel {
+    width: 340px;
+    min-width: 340px;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    background: #ffffff;
+    border-left: 1px solid #e5e7eb;
+
+    padding: 22px 18px;
+
+    overflow: hidden;
+}
+
+/* =======================================================
+   Header
+   ======================================================= */
+
+.activity-panel-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+
+    margin-bottom:18px;
+}
+
+.activity-panel-header h2{
+    margin:8px 0 0;
+    font-size:22px;
+    font-weight:700;
+    color:#111827;
+}
+
+.activity-chip{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:5px 10px;
+
+    border-radius:999px;
+
+    background:#dcfce7;
+    color:#15803d;
+
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+}
+
+/* =======================================================
+   Database Card
+   ======================================================= */
+
+.database-card{
+
+    background:#f8fafc;
+
+    border:1px solid #e5e7eb;
+
+    border-radius:16px;
+
+    padding:18px;
+
+    margin-bottom:18px;
+}
+
+.database-card-title{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    font-size:15px;
+
+    font-weight:700;
+
+    color:#111827;
+
+    margin-bottom:14px;
+}
+
+.db-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:10px 0;
+
+    border-bottom:1px solid #eef2f7;
+}
+
+.db-row:last-child{
+
+    border-bottom:none;
+}
+
+.db-label{
+
+    font-size:13px;
+
+    color:#6b7280;
+}
+
+.db-value{
+
+    font-size:13px;
+
+    font-weight:600;
+
+    color:#111827;
+
+    text-align:right;
+
+    max-width:160px;
+
+    word-break:break-word;
+}
+
+/* =======================================================
+   Timeline
+   ======================================================= */
+
+.timeline{
+
+    flex:1;
+
+    overflow-y:auto;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+
+    padding-right:4px;
+}
+
+.timeline-item{
+
+    display:flex;
+
+    gap:14px;
+
+    align-items:flex-start;
+}
+
+.timeline-icon{
+
+    width:38px;
+
+    height:38px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    flex-shrink:0;
+}
+
+/* =======================================================
+   Status Colors
+   ======================================================= */
+
+.timeline-icon.success{
+
+    background:#dcfce7;
+
+    color:#16a34a;
+}
+
+.timeline-icon.error{
+
+    background:#fee2e2;
+
+    color:#dc2626;
+}
+
+.timeline-icon.warn{
+
+    background:#fef3c7;
+
+    color:#d97706;
+}
+
+.timeline-icon.info{
+
+    background:#dbeafe;
+
+    color:#2563eb;
+}
+
+/* =======================================================
+   Content
+   ======================================================= */
+
+.timeline-content{
+
+    flex:1;
+
+    border-bottom:1px solid #eef2f7;
+
+    padding-bottom:16px;
+}
+
+.timeline-item:last-child .timeline-content{
+
+    border-bottom:none;
+}
+
+.timeline-message{
+
+    font-size:14px;
+
+    font-weight:600;
+
+    color:#111827;
+
+    line-height:1.45;
+
+    word-break:break-word;
+}
+
+.timeline-time{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:6px;
+
+    margin-top:8px;
+
+    font-size:12px;
+
+    color:#6b7280;
+}
+
+/* =======================================================
+   Empty State
+   ======================================================= */
+
+.timeline-empty{
+
+    flex:1;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    text-align:center;
+
+    color:#9ca3af;
+
+    font-size:14px;
+}
+
+/* =======================================================
+   Scrollbar
+   ======================================================= */
+
+.timeline::-webkit-scrollbar{
+
+    width:6px;
+}
+
+.timeline::-webkit-scrollbar-thumb{
+
+    background:#d1d5db;
+
+    border-radius:999px;
+}
+
+.timeline::-webkit-scrollbar-thumb:hover{
+
+    background:#9ca3af;
+}
+
+/* =======================================================
+   Responsive
+   ======================================================= */
+
+@media (max-width:1400px){
+
+    .activity-panel{
+
+        width:300px;
+
+        min-width:300px;
+    }
+}
+
+@media (max-width:1100px){
+
+    .activity-panel{
+
+        display:none;
+    }
+}

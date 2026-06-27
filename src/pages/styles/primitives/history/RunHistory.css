@@ -1,0 +1,234 @@
+/* ============================================================
+   RunHistory.css
+   ============================================================ */
+
+.run-history-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ============================================================
+   Header
+   ============================================================ */
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 26px 30px;
+
+  background: var(--surface);
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+
+  box-shadow: var(--shadow-sm);
+}
+
+.history-chip {
+  display: inline-block;
+
+  margin-bottom: 10px;
+  padding: 5px 12px;
+
+  background: var(--primary-bg);
+
+  color: var(--primary);
+
+  border-radius: var(--radius-full);
+
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.history-header h1 {
+  margin: 0;
+
+  font-size: 30px;
+  font-weight: 700;
+
+  color: var(--text);
+}
+
+.history-header p {
+  margin-top: 8px;
+  max-width: 560px;
+
+  color: var(--text-3);
+
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+/* ============================================================
+   Counter
+   ============================================================ */
+
+.history-counter {
+  width: 120px;
+  height: 120px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+
+  background: var(--primary-bg);
+
+  border: 1px solid var(--primary-border);
+  border-radius: var(--radius-lg);
+
+  color: var(--primary);
+
+  flex-shrink: 0;
+}
+
+.history-counter .count {
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.history-counter span {
+  font-size: 11px;
+  font-weight: 600;
+
+  color: var(--text-3);
+}
+
+/* ============================================================
+   History Cards
+   ============================================================ */
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.history-card {
+  padding: 24px;
+
+  background: var(--surface);
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+
+  box-shadow: var(--shadow-sm);
+
+  transition: all var(--transition-fast);
+}
+
+.history-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.history-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  margin-bottom: 20px;
+}
+
+.history-card-header h3 {
+  margin: 10px 0 0;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  color: var(--text);
+}
+
+.history-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.history-grid label {
+  display: block;
+
+  margin-bottom: 5px;
+
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+
+  color: var(--text-muted);
+}
+
+.history-grid strong {
+  font-size: 14px;
+  font-weight: 600;
+
+  color: var(--text-2);
+}
+
+.history-error {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-top: 18px;
+  padding: 14px 16px;
+
+  background: var(--danger-bg);
+
+  border: 1px solid var(--danger-border);
+  border-radius: var(--radius-md);
+
+  color: var(--danger-text);
+
+  font-size: 13px;
+}
+
+/* ============================================================
+   States
+   ============================================================ */
+
+.history-loading,
+.history-empty {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  gap: 14px;
+
+  padding: 80px 40px;
+
+  background: var(--surface);
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.history-loading {
+  flex-direction: row;
+
+  font-size: 16px;
+  font-weight: 600;
+
+  color: var(--text-3);
+}
+
+.history-empty h2 {
+  margin: 0;
+
+  color: var(--text);
+}
+
+.history-empty p {
+  margin: 0;
+
+  color: var(--text-muted);
+  text-align: center;
+}

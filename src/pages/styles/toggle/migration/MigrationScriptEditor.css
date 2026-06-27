@@ -1,0 +1,340 @@
+/* ============================================================
+   MigrationScriptEditor.css — Full-screen script editor modal
+   ============================================================ */
+
+.script-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn var(--transition-base);
+}
+
+.script-modal {
+  width: 1200px;
+  max-height: 92vh;
+  overflow: auto;
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--border);
+}
+
+.script-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 28px 34px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.script-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  background: var(--primary-bg);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.script-header h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.script-header p {
+  margin-top: 8px;
+  color: var(--text-3);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.script-info {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 22px 34px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.script-info-card {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 18px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.script-info-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: var(--primary-bg);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.script-info-card span {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.script-info-card strong {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.script-body {
+  padding: 26px 34px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  overflow-y: auto;
+}
+
+.editor-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.editor-panel h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.editor-panel p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.editor-wrapper {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-3);
+}
+
+.editor-toolbar-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.script-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 14px;
+  padding: 22px 34px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+/* ---- Shared modal elements (also used by MigrationModal) ---- */
+.migration-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn var(--transition-base);
+}
+
+.migration-modal {
+  width: 1100px;
+  max-height: 92vh;
+  overflow: auto;
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+}
+
+.migration-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 28px 34px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.modal-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--primary-bg);
+  color: var(--primary);
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.migration-modal-header h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.migration-modal-header p {
+  margin-top: 8px;
+  color: var(--text-3);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.close-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.close-btn:hover {
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+  color: var(--danger);
+}
+
+.migration-modal-body {
+  padding: 28px 34px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow-y: auto;
+}
+
+.migration-info-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 18px;
+}
+
+.migration-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.migration-field label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-2);
+}
+
+.modern-input {
+  padding: 12px 16px;
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-family: var(--font-sans);
+  color: var(--text);
+  background: var(--surface);
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.modern-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+}
+
+.modern-input::placeholder { color: var(--text-muted); }
+
+.version-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.version-card span { font-size: 12px; color: var(--text-3); }
+
+.version-card strong {
+  display: block;
+  font-size: 22px;
+  font-weight: 700;
+  margin-top: 4px;
+  color: var(--primary);
+  font-family: var(--font-mono);
+}
+
+.editor-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.migration-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+  padding: 22px 34px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}

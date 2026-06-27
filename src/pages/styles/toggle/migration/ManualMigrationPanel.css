@@ -1,0 +1,273 @@
+/* ============================================================
+   ManualMigrationPanel.css
+   ============================================================ */
+
+.migration-modal-overlay {
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 32px;
+
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(6px);
+
+  z-index: 1000;
+}
+
+.migration-modal {
+  width: min(1100px, 95vw);
+  max-height: 92vh;
+
+  display: flex;
+  flex-direction: column;
+
+  background: var(--surface);
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+
+  overflow: hidden;
+
+  box-shadow: var(--shadow-xl);
+}
+
+/* ============================================================
+   Header
+   ============================================================ */
+
+.migration-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  padding: 28px 32px;
+
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  margin-bottom: 10px;
+  padding: 5px 12px;
+
+  background: var(--primary-bg);
+  color: var(--primary);
+
+  border-radius: var(--radius-full);
+
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.migration-modal-header h2 {
+  margin: 0;
+
+  font-size: 28px;
+  font-weight: 700;
+
+  color: var(--text);
+}
+
+.migration-modal-header p {
+  margin-top: 8px;
+  max-width: 620px;
+
+  color: var(--text-muted);
+
+  line-height: 1.6;
+}
+
+.close-btn {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border: none;
+  border-radius: 50%;
+
+  background: transparent;
+
+  cursor: pointer;
+
+  color: var(--text-muted);
+
+  transition: all var(--transition-fast);
+}
+
+.close-btn:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+/* ============================================================
+   Body
+   ============================================================ */
+
+.migration-modal-body {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  padding: 30px 32px;
+
+  overflow-y: auto;
+}
+
+.migration-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 20px;
+}
+
+.migration-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.migration-field label {
+  font-size: 13px;
+  font-weight: 600;
+
+  color: var(--text);
+}
+
+.modern-input {
+  width: 100%;
+
+  padding: 12px 14px;
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+
+  background: var(--surface);
+
+  color: var(--text);
+
+  font-size: 14px;
+
+  transition: border-color var(--transition-fast);
+}
+
+.modern-input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.version-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 18px;
+
+  background: var(--surface-2);
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.version-card span {
+  display: block;
+
+  font-size: 12px;
+
+  color: var(--text-muted);
+}
+
+.version-card strong {
+  font-size: 20px;
+  color: var(--text);
+}
+
+/* ============================================================
+   Editors
+   ============================================================ */
+
+.editor-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.editor-title {
+  font-size: 14px;
+  font-weight: 700;
+
+  color: var(--text);
+}
+
+.editor-wrapper .monaco-editor,
+.editor-wrapper .overflow-guard {
+  border-radius: var(--radius-md);
+}
+
+/* ============================================================
+   Footer
+   ============================================================ */
+
+.migration-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+
+  padding: 20px 32px;
+
+  border-top: 1px solid var(--border);
+}
+
+.secondary-btn,
+.primary-btn {
+  padding: 10px 18px;
+
+  border-radius: var(--radius-md);
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all var(--transition-fast);
+}
+
+.secondary-btn {
+  background: transparent;
+
+  border: 1px solid var(--border);
+
+  color: var(--text);
+}
+
+.secondary-btn:hover {
+  background: var(--surface-2);
+}
+
+.primary-btn {
+  border: none;
+
+  background: var(--primary);
+
+  color: white;
+}
+
+.primary-btn:hover:not(:disabled) {
+  opacity: 0.92;
+}
+
+.primary-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

@@ -1,0 +1,197 @@
+/* ==========================================================
+   Sidebar.css
+   ========================================================== */
+
+.sidebar {
+  width: 260px;
+  min-width: 260px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  padding: 20px 16px;
+  overflow-y: auto;
+}
+
+/* ================= Header ================= */
+
+.sidebar-header {
+  margin-bottom: 20px;
+}
+
+.sidebar-title {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+
+/* ================= Groups ================= */
+
+.sidebar-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sidebar-group-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin: 12px 0 8px;
+  padding-left: 8px;
+}
+
+/* ================= Divider ================= */
+
+.sidebar-divider {
+  height: 1px;
+  background: #edf2f7;
+  margin: 18px 0;
+}
+
+/* ================= Items ================= */
+
+.sidebar-item {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 11px 12px;
+  border-radius: 12px;
+
+  cursor: pointer;
+
+  color: #4b5563;
+  font-size: 14px;
+  font-weight: 500;
+
+  transition:
+    background .2s ease,
+    color .2s ease,
+    transform .15s ease;
+}
+
+.sidebar-item:hover {
+  background: #f3f6fb;
+  color: #2563eb;
+}
+
+.sidebar-item:active {
+  transform: scale(.98);
+}
+
+.sidebar-item.active {
+  background: #e8f1ff;
+  color: #2563eb;
+  font-weight: 600;
+}
+
+/* ================= Left ================= */
+
+.sidebar-item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.sidebar-item-left svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ================= Right ================= */
+
+.sidebar-item-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-item-right svg {
+  width: 15px;
+  height: 15px;
+  opacity: .55;
+}
+
+/* ================= Badge ================= */
+
+.sidebar-badge {
+  min-width: 20px;
+  height: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 6px;
+
+  border-radius: 999px;
+
+  background: #f59e0b;
+  color: white;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ================= Scrollbar ================= */
+
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 100px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* ================= Responsive ================= */
+
+@media (max-width: 1100px) {
+  .sidebar {
+    width: 220px;
+    min-width: 220px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 72px;
+    min-width: 72px;
+    padding: 16px 10px;
+  }
+
+  .sidebar-title,
+  .sidebar-group-title,
+  .sidebar-item-left span,
+  .sidebar-badge,
+  .sidebar-item-right {
+    display: none;
+  }
+
+  .sidebar-item {
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .sidebar-item-left {
+    justify-content: center;
+    flex: unset;
+  }
+}

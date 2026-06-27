@@ -1,0 +1,206 @@
+/* ============================================================
+   MigrationTable.css
+   ============================================================ */
+
+.table-container {
+  overflow: hidden;
+
+  background: var(--surface);
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+
+  box-shadow: var(--shadow-sm);
+}
+
+.migration-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.migration-table thead {
+  background: var(--surface-2);
+}
+
+.migration-table th {
+  padding: 14px 16px;
+
+  text-align: left;
+
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+
+  color: var(--text-muted);
+
+  border-bottom: 1px solid var(--border);
+}
+
+.migration-table td {
+  padding: 14px 16px;
+
+  border-bottom: 1px solid var(--border);
+
+  font-size: 13px;
+}
+
+.table-row {
+  transition: background var(--transition-fast);
+}
+
+.table-row:hover {
+  background: var(--surface-2);
+}
+
+.col-icon {
+  width: 42px;
+}
+
+.cell-icon {
+  text-align: center;
+}
+
+.icon-success {
+  color: var(--success);
+}
+
+.dot-pending {
+  width: 10px;
+  height: 10px;
+
+  margin: auto;
+
+  border-radius: 50%;
+
+  background: var(--warning);
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+.text-main {
+  color: var(--text);
+}
+
+.text-dim {
+  color: var(--text-2);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.status-cell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.status-badge {
+  padding: 5px 10px;
+
+  border-radius: var(--radius-full);
+
+  font-size: 12px;
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+.status-badge.success {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.status-badge.failed {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.info-btn,
+.validate-btn,
+.repair-btn,
+.migrate-btn,
+.delete-btn {
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.info-btn,
+.delete-btn {
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border-radius: 6px;
+
+  border: 1px solid var(--border);
+
+  background: var(--surface);
+}
+
+.info-btn:hover {
+  background: var(--surface-2);
+}
+
+.delete-btn {
+  color: var(--danger);
+}
+
+.delete-btn:hover {
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+}
+
+.validate-btn,
+.repair-btn,
+.migrate-btn {
+  padding: 6px 10px;
+
+  border: none;
+  border-radius: 6px;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.validate-btn {
+  background: var(--primary-bg);
+  color: var(--primary);
+}
+
+.repair-btn {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+}
+
+.migrate-btn {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.validate-btn:hover,
+.repair-btn:hover,
+.migrate-btn:hover {
+  opacity: .9;
+}
+
+.no-data {
+  padding: 40px;
+
+  text-align: center;
+
+  color: var(--text-muted);
+}
