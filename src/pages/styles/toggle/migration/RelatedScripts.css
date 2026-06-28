@@ -1,0 +1,230 @@
+/* ===========================================================
+   RelatedScripts.css
+   =========================================================== */
+
+.related-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    margin-top: 24px;
+    overflow: hidden;
+}
+
+/* ===========================================================
+   Header
+   =========================================================== */
+
+.related-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 22px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f8fafc;
+}
+
+.related-header svg {
+    color: #2563eb;
+}
+
+.related-header h3 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.related-header p {
+    margin: 4px 0 0;
+    color: #64748b;
+    font-size: 13px;
+}
+
+/* ===========================================================
+   Empty State
+   =========================================================== */
+
+.related-empty {
+    padding: 50px 20px;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 15px;
+}
+
+/* ===========================================================
+   List
+   =========================================================== */
+
+.related-list {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===========================================================
+   Item
+   =========================================================== */
+
+.related-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 18px 22px;
+
+    cursor: pointer;
+
+    transition: all .25s ease;
+
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.related-item:last-child {
+    border-bottom: none;
+}
+
+.related-item:hover {
+    background: #f8fbff;
+}
+
+/* Current Migration */
+
+.related-item.active {
+    background: #eff6ff;
+    border-left: 5px solid #2563eb;
+}
+
+/* ===========================================================
+   Left
+   =========================================================== */
+
+.related-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.related-version {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.related-description {
+    margin-top: 4px;
+    font-size: 13px;
+    color: #64748b;
+}
+
+/* ===========================================================
+   Right
+   =========================================================== */
+
+.related-right {
+    display: flex;
+    align-items: center;
+}
+
+/* ===========================================================
+   Migration Type Badge
+   =========================================================== */
+
+.script-type {
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+
+/* CREATE */
+
+.script-type.create {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+/* ALTER */
+
+.script-type.alter {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+/* INSERT */
+
+.script-type.insert {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+/* UPDATE */
+
+.script-type.update {
+    background: #ede9fe;
+    color: #6d28d9;
+}
+
+/* DELETE */
+
+.script-type.delete {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+/* ===========================================================
+   Status Icons
+   =========================================================== */
+
+.success-icon {
+    color: #22c55e;
+}
+
+.failed-icon {
+    color: #ef4444;
+}
+
+.pending-icon {
+    color: #f59e0b;
+}
+
+/* ===========================================================
+   Scroll (Optional)
+   =========================================================== */
+
+.related-list {
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.related-list::-webkit-scrollbar {
+    width: 7px;
+}
+
+.related-list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 20px;
+}
+
+.related-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* ===========================================================
+   Responsive
+   =========================================================== */
+
+@media (max-width: 768px) {
+
+    .related-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    .related-right {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+}

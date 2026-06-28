@@ -1,0 +1,81 @@
+.sql-viewer {
+    margin-top: 24px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #2d3748;
+    background: #111827;
+}
+
+.sql-header {
+    height: 52px;
+    background: #1f2937;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 18px;
+    border-bottom: 1px solid #374151;
+}
+
+.sql-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    font-weight: 600;
+}
+
+.copy-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    color: white;
+    border: 1px solid #374151;
+    padding: 7px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.copy-btn:hover {
+    background: #374151;
+}
+
+.sql-body {
+    max-height: 380px;
+    overflow: auto;
+    font-family: Consolas, Monaco, monospace;
+}
+
+.sql-line {
+    display: flex;
+    min-height: 28px;
+}
+
+.sql-line:hover {
+    background: rgba(255,255,255,.04);
+}
+
+.line-number {
+    width: 60px;
+    flex-shrink: 0;
+    text-align: right;
+    padding-right: 16px;
+    color: #6b7280;
+    user-select: none;
+    border-right: 1px solid #374151;
+    padding-top: 5px;
+}
+
+.line-code {
+    flex: 1;
+    white-space: pre;
+    padding: 5px 18px;
+    color: #e5e7eb;
+}
+
+.sql-empty {
+    color: #9ca3af;
+    text-align: center;
+    padding: 50px;
+}

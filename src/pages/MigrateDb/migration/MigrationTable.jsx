@@ -1,8 +1,9 @@
 import React from "react";
 import axios from "axios";
-import { CheckCircle2, Trash2, Info } from "lucide-react";
+import { CheckCircle2, Trash2,  Settings2 } from "lucide-react";
 import { useState } from "react";
 import "../../styles/toggle/migration/MigrationTable.css";
+import MigrationDetailsModal from "./MigrationDetailsModal";
 
 const API = "http://localhost:8081/api/migrations";
 
@@ -10,9 +11,13 @@ const MigrationTable = ({
   searchQuery = "",
   data = [],
   onRepairSuccess,
-  onDeleteSuccess,
-  onInfoClick,
+  onDeleteSuccess
 }) => {
+  const [selectedMigration, setSelectedMigration] = useState(null);
+
+  const [relatedScripts, setRelatedScripts] = useState([]);
+
+  const [openDetails, setOpenDetails] = useState(false);
   const handleRepair = async (version) => {
     try {
       const { data: connectionId } = await axios.get(`${API}/get-connection`);
@@ -110,7 +115,44 @@ const MigrationTable = ({
       item.description?.toLowerCase().includes(query) ||
       item.version?.toLowerCase().includes(query),
   );
+  
+  const openMigrationDetails = async (version) => {
+    try {
+      const { data: connectionId } = await axios.get(`${API}/get-connection`);
 
+      const { data } = await axios.get(`${API}/details`, {
+        params: {
+          connectionId,
+          versionId: version,
+        },
+      });
+
+      setSelectedMigration(data.migration);
+
+      setRelatedScripts(data.relatedScripts);
+
+      setOpenDetails(true);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  const handleRollback = async ({
+    currentVersion,
+    rollbackType,
+    targetVersion,
+  }) => {
+    const { data: connectionId } = await axios.get(`${API}/get-connection`);
+
+    await axios.post(`${API}/rollback`, {
+      connectionId,
+
+      version: currentVersion,
+
+      rollbackType,
+
+      targetVersion,
+    });
+  };
   return (
     <div className="table-container">
       <table className="migration-table">
@@ -161,43 +203,13 @@ const MigrationTable = ({
                     </span>
 
                     <div className="action-buttons">
-                      <button
-                        className="info-btn"
-                        onClick={() => onInfoClick?.(row.version)}
-                        title="View Script"
-                      >
-                        <Info size={14} />
+                      <button onClick={() => openMigrationDetails(row.version)}>
+                        <Settings2 size={15} />
                       </button>
 
                       {!row.success && (
                         <>
-                          <button
-                            className="validate-btn"
-                            onClick={() => handleValidate(row.version)}
-                          >
-                            Validate
-                          </button>
-
-                          <button
-                            className="repair-btn"
-                            onClick={() => handleRepair(row.version)}
-                          >
-                            Repair
-                          </button>
-
-                          <button
-                            className="repair-btn"
-                            onClick={() => handleUpdate(row.version)}
-                          >
-                            Update
-                          </button>
                           
-                          <button
-                            className="migrate-btn"
-                            onClick={() => handleMigrate(row.version)}
-                          >
-                            Migrate
-                          </button>
                         </>
                       )}
 
@@ -216,6 +228,17 @@ const MigrationTable = ({
           )}
         </tbody>
       </table>
+      <MigrationDetailsModal
+        open={openDetails}
+        migration={selectedMigration}
+        relatedScripts={relatedScripts}
+        onClose={() => setOpenDetails(false)}
+        onValidate={handleValidate}
+        onRepair={handleRepair}
+        onUpdate={handleUpdate}
+        onMigrate={handleMigrate}
+        onRollback={handleRollback}
+      />
     </div>
   );
 };

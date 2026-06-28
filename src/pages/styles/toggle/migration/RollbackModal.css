@@ -1,0 +1,302 @@
+/* ===========================================================
+   RollbackModal.css
+   =========================================================== */
+
+.rollback-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1200;
+}
+
+.rollback-modal {
+    width: 720px;
+    max-width: 95vw;
+    background: #ffffff;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow:
+        0 25px 60px rgba(15, 23, 42, 0.28),
+        0 10px 24px rgba(15, 23, 42, 0.12);
+    animation: rollbackFade .25s ease;
+}
+
+/* ===========================================================
+   Header
+   =========================================================== */
+
+.rollback-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 22px 26px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #ffffff;
+}
+
+.rollback-header h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.rollback-header p {
+    margin-top: 4px;
+    font-size: 14px;
+    color: #64748b;
+}
+
+.close-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 10px;
+    background: #f1f5f9;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: .2s;
+}
+
+.close-btn:hover {
+    background: #e2e8f0;
+}
+
+/* ===========================================================
+   Content
+   =========================================================== */
+
+.rollback-content {
+    padding: 28px;
+}
+
+.rollback-content h3 {
+    margin: 0 0 22px;
+    font-size: 18px;
+    color: #0f172a;
+}
+
+/* ===========================================================
+   Strategy Cards
+   =========================================================== */
+
+.rollback-options {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.rollback-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+
+    padding: 18px;
+    border-radius: 14px;
+
+    border: 2px solid #e2e8f0;
+    cursor: pointer;
+    transition: all .25s ease;
+    background: #ffffff;
+}
+
+.rollback-card:hover {
+    border-color: #3b82f6;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(59,130,246,.10);
+}
+
+.rollback-card.selected {
+    border-color: #2563eb;
+    background: #eff6ff;
+}
+
+.rollback-radio {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2563eb;
+    flex-shrink: 0;
+}
+
+.rollback-card h4 {
+    margin: 0;
+    font-size: 16px;
+    color: #0f172a;
+}
+
+.rollback-card p {
+    margin-top: 6px;
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* ===========================================================
+   Version Selection
+   =========================================================== */
+
+.version-box {
+    margin-top: 26px;
+}
+
+.version-box label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 8px;
+}
+
+.version-box select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: white;
+    font-size: 14px;
+    outline: none;
+    transition: .2s;
+}
+
+.version-box select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37,99,235,.15);
+}
+
+/* ===========================================================
+   Warning
+   =========================================================== */
+
+.rollback-warning {
+    margin-top: 28px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+
+    padding: 16px 18px;
+
+    border-radius: 12px;
+
+    background: #fff7ed;
+    color: #b45309;
+
+    border: 1px solid #fdba74;
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.rollback-warning svg {
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+/* ===========================================================
+   Footer
+   =========================================================== */
+
+.rollback-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 14px;
+
+    padding: 22px 26px;
+
+    border-top: 1px solid #e5e7eb;
+    background: #fafafa;
+}
+
+.cancel-btn,
+.rollback-btn {
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 12px 20px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    transition: .25s;
+}
+
+.cancel-btn {
+    background: #e2e8f0;
+    color: #334155;
+}
+
+.cancel-btn:hover {
+    background: #cbd5e1;
+}
+
+.rollback-btn {
+    background: #dc2626;
+    color: white;
+}
+
+.rollback-btn:hover {
+    background: #b91c1c;
+    transform: translateY(-2px);
+}
+
+/* ===========================================================
+   Animation
+   =========================================================== */
+
+@keyframes rollbackFade {
+
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+}
+
+/* ===========================================================
+   Responsive
+   =========================================================== */
+
+@media (max-width: 768px) {
+
+    .rollback-modal {
+        width: 100%;
+        height: 100%;
+        max-width: none;
+        border-radius: 0;
+    }
+
+    .rollback-content {
+        padding: 20px;
+    }
+
+    .rollback-footer {
+        flex-direction: column;
+    }
+
+    .cancel-btn,
+    .rollback-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+}
