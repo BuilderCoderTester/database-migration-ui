@@ -7,7 +7,7 @@
     border: 1px solid #e5e7eb;
     border-radius: 14px;
     margin-top: 24px;
-    overflow: hidden;
+    overflow: hidden;overflow-y: auto;
 }
 
 /* ===========================================================

@@ -3,7 +3,7 @@
     border-radius: 12px;
     overflow: hidden;
     border: 1px solid #2d3748;
-    background: #111827;
+    background: #111827;overflow-y: auto;
 }
 
 .sql-header {

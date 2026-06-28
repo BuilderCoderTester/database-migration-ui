@@ -3,209 +3,344 @@
    ============================================================ */
 
 .topnav {
-  height: 56px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-  gap: 10px;
-  margin: 12px 12px 0;
-  flex-shrink: 0;
-  box-shadow: var(--shadow-sm);
-  transition: background var(--transition-slow), border-color var(--transition-slow);
+    height: 60px;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 0 22px;
+    margin: 12px 12px 0;
+
+    flex-shrink: 0;
+
+    background: linear-gradient(
+        180deg,
+        var(--surface),
+        var(--surface-2)
+    );
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-md);
+
+    transition: all var(--transition-base);
 }
 
-/* ---- Logo ---- */
+/* ============================================================
+   Logo
+   ============================================================ */
+
 .topnav-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-right: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-right: 8px;
 }
 
 .logo-box {
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 700;
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.30);
-  flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: var(--radius-md);
+
+    background: linear-gradient(
+        135deg,
+        var(--primary),
+        var(--primary-light)
+    );
+
+    color: white;
+
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+
+    box-shadow: var(--shadow-primary);
 }
 
 .logo-text {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
 .logo-text.title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text);
-  letter-spacing: -0.02em;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
 }
 
 .logo-text.version {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--text-muted);
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
 }
 
-/* ---- Separator ---- */
+/* ============================================================
+   Separator
+   ============================================================ */
+
 .nav-sep {
-  width: 1px;
-  height: 22px;
-  background: var(--border);
-  margin: 0 8px;
-  flex-shrink: 0;
+    width: 1px;
+    height: 26px;
+    background: var(--border);
+    margin: 0 10px;
 }
 
-/* ---- Tabs ---- */
+/* ============================================================
+   Tabs
+   ============================================================ */
+
 .topnav-tab {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 6px 12px;
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-3);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  border: 1px solid transparent;
-  background: none;
-  font-family: var(--font-sans);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 8px 14px;
+
+    border-radius: var(--radius-md);
+
+    border: 1px solid transparent;
+
+    background: transparent;
+
+    color: var(--text-3);
+
+    font-size: 13px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition: all var(--transition-base);
 }
 
 .topnav-tab:hover {
-  background: var(--surface-2);
-  color: var(--text);
+    background: var(--surface-3);
+    color: var(--text);
+
+    transform: translateY(-1px);
 }
 
 .topnav-tab.active {
-  background: var(--primary-bg);
-  color: var(--primary);
-  border-color: var(--primary-border);
-  font-weight: 600;
+    background: var(--primary-bg);
+
+    color: var(--primary);
+
+    border-color: var(--primary-border);
+
+    box-shadow: var(--shadow-sm);
+
+    font-weight: 600;
 }
 
-/* ---- Right cluster ---- */
+/* ============================================================
+   Right
+   ============================================================ */
+
 .topnav-right {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+    margin-left: auto;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
+
+/* ============================================================
+   Environment
+   ============================================================ */
 
 .env-badge {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 5px 12px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-full);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-3);
-  font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 6px 14px;
+
+    border-radius: var(--radius-full);
+
+    background: var(--surface-2);
+
+    border: 1px solid var(--border);
+
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-2);
+
+    box-shadow: var(--shadow-sm);
 }
 
 .dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--success);
-  animation: pulse 2s infinite;
-  flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: var(--success);
+
+    animation: pulse 2s infinite;
 }
 
-/* ---- Theme toggle ---- */
+/* ============================================================
+   Theme Toggle
+   ============================================================ */
+
 .toggle-wrap {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  padding: 6px 12px;
-  border-radius: var(--radius-full);
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  transition: all var(--transition-base);
-  user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 6px 12px;
+
+    background: var(--surface-2);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-full);
+
+    cursor: pointer;
+
+    transition: all var(--transition-base);
 }
 
-.toggle-wrap:hover { border-color: var(--border-2); }
+.toggle-wrap:hover {
+    border-color: var(--primary-border);
+    box-shadow: var(--shadow-sm);
+}
 
 .toggle-track {
-  width: 34px;
-  height: 19px;
-  border-radius: 10px;
-  background: var(--border-2);
-  position: relative;
-  transition: background var(--transition-base);
-  flex-shrink: 0;
+    width: 36px;
+    height: 20px;
+
+    border-radius: 20px;
+
+    background: var(--border-2);
+
+    position: relative;
+
+    transition: .25s;
 }
 
-.toggle-track.on { background: var(--primary); }
+.toggle-track.on {
+    background: var(--primary);
+}
 
 .toggle-thumb {
-  width: 13px;
-  height: 13px;
-  border-radius: 50%;
-  background: #fff;
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  transition: transform var(--transition-base);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.20);
+    position: absolute;
+
+    top: 3px;
+    left: 3px;
+
+    width: 14px;
+    height: 14px;
+
+    border-radius: 50%;
+
+    background: white;
+
+    transition: transform .25s;
+
+    box-shadow: 0 2px 5px rgba(0,0,0,.2);
 }
 
-.toggle-track.on .toggle-thumb { transform: translateX(15px); }
+.toggle-track.on .toggle-thumb {
+    transform: translateX(16px);
+}
 
 .toggle-lbl {
-  font-size: 12px;
-  font-family: var(--font-mono);
-  color: var(--text-3);
+    font-size: 12px;
+    color: var(--text-3);
+    font-family: var(--font-mono);
 }
 
-/* ---- Notification / User icon buttons ---- */
+/* ============================================================
+   Icon Buttons
+   ============================================================ */
+
 .nav-icon-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--surface-2);
-  color: var(--text-3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  position: relative;
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: var(--radius-md);
+
+    background: var(--surface-2);
+
+    border: 1px solid var(--border);
+
+    color: var(--text-3);
+
+    cursor: pointer;
+
+    transition: all var(--transition-base);
+
+    position: relative;
 }
 
 .nav-icon-btn:hover {
-  background: var(--surface-3);
-  color: var(--text);
-  border-color: var(--border-2);
+    background: var(--surface-3);
+
+    color: var(--primary);
+
+    border-color: var(--primary-border);
+
+    transform: translateY(-2px);
+
+    box-shadow: var(--shadow-sm);
 }
 
 .nav-icon-btn .notif-dot {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--danger);
-  border: 1.5px solid var(--surface);
+    position: absolute;
+
+    top: 6px;
+    right: 6px;
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: var(--danger);
+
+    border: 2px solid var(--surface);
+}
+.topnav{
+    background: var(--teal);
+    border: none;
+}
+
+.logo-text.title,
+.topnav-tab,
+.toggle-lbl,
+.env-badge,
+.nav-icon-btn{
+    color: white;
+}
+
+.topnav-tab:hover{
+    background: rgba(255,255,255,.08);
+}
+
+.topnav-tab.active{
+    background: var(--primary);
+    color: white;
+}
+
+.nav-icon-btn{
+    background: rgba(255,255,255,.08);
+    border-color: rgba(255,255,255,.12);
+}
+
+.env-badge{
+    background: rgba(255,255,255,.08);
+    border-color: rgba(255,255,255,.12);
 }

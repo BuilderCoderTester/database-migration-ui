@@ -6,12 +6,19 @@
   width: 260px;
   min-width: 260px;
   height: 100%;
+
   display: flex;
   flex-direction: column;
-  background: #ffffff;
-  border-right: 1px solid #e5e7eb;
+
+  background: var(--surface-3);
+
+  border-right: 1px solid var(--border);
+
   padding: 20px 16px;
+
   overflow-y: auto;
+
+  transition: all var(--transition-base);
 }
 
 /* ================= Header ================= */
@@ -22,11 +29,14 @@
 
 .sidebar-title {
   display: block;
+
   font-size: 11px;
   font-weight: 700;
+
   letter-spacing: .12em;
   text-transform: uppercase;
-  color: #6b7280;
+
+  color: var(--text-muted);
 }
 
 /* ================= Groups ================= */
@@ -40,9 +50,12 @@
 .sidebar-group-title {
   font-size: 11px;
   font-weight: 700;
-  color: #9ca3af;
+
+  color: var(--text-muted);
+
   text-transform: uppercase;
   letter-spacing: .08em;
+
   margin: 12px 0 8px;
   padding-left: 8px;
 }
@@ -51,7 +64,9 @@
 
 .sidebar-divider {
   height: 1px;
-  background: #edf2f7;
+
+  background: var(--border);
+
   margin: 18px 0;
 }
 
@@ -59,8 +74,10 @@
 
 .sidebar-item {
   width: 100%;
+
   border: none;
   outline: none;
+
   background: transparent;
 
   display: flex;
@@ -68,23 +85,25 @@
   justify-content: space-between;
 
   padding: 11px 12px;
-  border-radius: 12px;
+
+  border-radius: var(--radius-md);
 
   cursor: pointer;
 
-  color: #4b5563;
+  color: var(--text-2);
+
   font-size: 14px;
   font-weight: 500;
 
-  transition:
-    background .2s ease,
-    color .2s ease,
-    transform .15s ease;
+  transition: all var(--transition-base);
 }
 
 .sidebar-item:hover {
-  background: #f3f6fb;
-  color: #2563eb;
+  background: var(--surface-2);
+
+  color: var(--primary);
+
+  transform: translateX(4px);
 }
 
 .sidebar-item:active {
@@ -92,9 +111,15 @@
 }
 
 .sidebar-item.active {
-  background: #e8f1ff;
-  color: #2563eb;
+  background: var(--primary-bg);
+
+  color: var(--primary);
+
+  border-left: 4px solid var(--primary);
+
   font-weight: 600;
+
+  box-shadow: var(--shadow-sm);
 }
 
 /* ================= Left ================= */
@@ -122,7 +147,10 @@
 .sidebar-item-right svg {
   width: 15px;
   height: 15px;
-  opacity: .55;
+
+  opacity: .6;
+
+  color: var(--text-muted);
 }
 
 /* ================= Badge ================= */
@@ -137,10 +165,11 @@
 
   padding: 0 6px;
 
-  border-radius: 999px;
+  border-radius: var(--radius-full);
 
-  background: #f59e0b;
-  color: white;
+  background: var(--warning);
+
+  color: #fff;
 
   font-size: 11px;
   font-weight: 700;
@@ -152,25 +181,59 @@
   width: 6px;
 }
 
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 .sidebar::-webkit-scrollbar-thumb {
-  background: #d1d5db;
-  border-radius: 100px;
+  background: var(--border-2);
+  border-radius: 999px;
 }
 
 .sidebar::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: var(--text-muted);
+}
+.sidebar {
+    background: var(--teal);
+    border-right: none;
 }
 
+.sidebar-title,
+.sidebar-group-title {
+    color: rgba(255,255,255,.6);
+}
+
+.sidebar-item {
+    color: rgba(255,255,255,.85);
+}
+
+.sidebar-item:hover {
+    background: rgba(255,255,255,.08);
+    color: #fff;
+}
+
+.sidebar-item.active {
+    background: var(--primary);
+    color: #fff;
+    border-left: none;
+}
+
+.sidebar-item-right svg {
+    color: rgba(255,255,255,.5);
+}
 /* ================= Responsive ================= */
 
-@media (max-width: 1100px) {
+@media (max-width:1100px) {
+
   .sidebar {
     width: 220px;
     min-width: 220px;
   }
+
 }
 
-@media (max-width: 768px) {
+@media (max-width:768px) {
+
   .sidebar {
     width: 72px;
     min-width: 72px;
@@ -194,4 +257,5 @@
     justify-content: center;
     flex: unset;
   }
+
 }

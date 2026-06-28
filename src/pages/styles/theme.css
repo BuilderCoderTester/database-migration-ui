@@ -1,5 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap');
 
+body{
+    font-family: 'Manrope', sans-serif;
+}
 /* ============================================================
    RESET
    ============================================================ */
@@ -7,6 +10,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  
 }
 
 /* ============================================================
@@ -14,64 +18,84 @@
    ============================================================ */
 :root,
 .migrate-container {
-  /* Core Palette */
-  --primary:        #2563EB;
-  --primary-hover:  #1D4ED8;
-  --primary-light:  #3B82F6;
-  --primary-bg:     #EFF6FF;
-  --primary-border: #BFDBFE;
 
-  --background:     #F8FAFC;
-  --surface:        #FFFFFF;
-  --surface-2:      #F8FAFC;
-  --surface-3:      #F1F5F9;
+  /* ==========================================================
+     PRIMARY BRAND COLORS
+     ========================================================== */
 
-  --border:         #E2E8F0;
-  --border-2:       #CBD5E1;
+  --primary:        #0FA4AF;
+  --primary-hover:  #0C8E98;
+  --primary-light:  #4EC2CA;
+  --primary-bg:     #E8F8F9;
+  --primary-border: #8FD7DD;
 
-  --text:           #0F172A;
-  --text-2:         #334155;
-  --text-3:         #64748B;
-  --text-muted:     #94A3B8;
+/* ==========================================================
+   BACKGROUNDS
+   ========================================================== */
 
-  /* Semantic Colors */
-  --success:        #16A34A;
-  --success-bg:     #DCFCE7;
-  --success-border: #86EFAC;
-  --success-text:   #15803D;
+--background:     #DCEBED;   /* Main page */
+--surface:        #EEF6F7;   /* Cards */
+--surface-2:      #D7E8EA;   /* Panels */
+--surface-3:      #C8DEE1;   /* Sidebar sections */
 
-  --warning:        #D97706;
-  --warning-bg:     #FEF3C7;
-  --warning-border: #FCD34D;
-  --warning-text:   #B45309;
+/* ==========================================================
+   BORDERS
+   ========================================================== */
 
-  --danger:         #DC2626;
-  --danger-bg:      #FEE2E2;
-  --danger-border:  #FCA5A5;
-  --danger-text:    #B91C1C;
+--border:         #AFCDD1;
+--border-2:       #8CBEC4;
 
-  --info:           #0EA5E9;
-  --info-bg:        #E0F2FE;
-  --info-border:    #7DD3FC;
+  /* ==========================================================
+     TEXT
+     ========================================================== */
 
-  --purple:         #7C3AED;
-  --purple-bg:      #F5F3FF;
-  --purple-border:  #C4B5FD;
+  --text:           #003135;
+  --text-2:         #024950;
+  --text-3:         #4E7277;
+  --text-muted:     #7A9EA3;
 
-  --teal:           #0D9488;
-  --teal-bg:        #F0FDFA;
-  --teal-border:    #99F6E4;
+  /* ==========================================================
+     STATUS COLORS
+     ========================================================== */
 
-  /* Typography */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-mono: 'IBM Plex Mono', 'Fira Code', monospace;
+  --success:        #0FAF6B;
+  --success-bg:     #E9F9F1;
+  --success-border: #8BE0B8;
+  --success-text:   #087E4B;
 
-  /* Shadows */
-  --shadow-sm:  0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
-  --shadow-md:  0 4px 12px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.05);
-  --shadow-lg:  0 8px 28px rgba(15, 23, 42, 0.10), 0 4px 12px rgba(15, 23, 42, 0.06);
-  --shadow-xl:  0 20px 60px rgba(15, 23, 42, 0.14), 0 8px 24px rgba(15, 23, 42, 0.08);
-  --shadow-primary: 0 8px 24px rgba(37, 99, 235, 0.20);
+  --warning:        #D98B2B;
+  --warning-bg:     #FFF4E5;
+  --warning-border: #F5C56D;
+  --warning-text:   #A76000;
+
+  --danger:         #964734;
+  --danger-bg:      #FAECE8;
+  --danger-border:  #D89B8D;
+  --danger-text:    #7B3424;
+
+  --info:           #0FA4AF;
+  --info-bg:        #E8F8F9;
+  --info-border:    #87D5DB;
+
+  --purple:         #7E6AD6;
+  --purple-bg:      #F3F1FD;
+  --purple-border:  #C7BDF6;
+
+  --teal:           #024950;
+  --teal-bg:        #E5F3F4;
+  --teal-border:    #8CBEC4;
+
+  /* ==========================================================
+     SHADOWS
+     ========================================================== */
+
+  --shadow-sm: 0 1px 3px rgba(0,49,53,.08);
+  --shadow-md: 0 6px 18px rgba(0,49,53,.10);
+  --shadow-lg: 0 12px 28px rgba(0,49,53,.14);
+  --shadow-xl: 0 20px 45px rgba(0,49,53,.18);
+
+  --shadow-primary: 0 8px 24px rgba(15,164,175,.25);
+
 
   /* Border Radius */
   --radius-sm:  8px;
@@ -106,57 +130,59 @@
    ============================================================ */
 .migrate-container.dark,
 .dark {
-  --primary:        #3B82F6;
-  --primary-hover:  #2563EB;
-  --primary-light:  #60A5FA;
-  --primary-bg:     #1E3A5F;
-  --primary-border: #1E40AF;
 
-  --background:     #0A0F1A;
-  --surface:        #111827;
-  --surface-2:      #1A2235;
-  --surface-3:      #1F2D45;
+  --primary:        #0FA4AF;
+  --primary-hover:  #12BBC8;
+  --primary-light:  #5FD3DA;
+  --primary-bg:     #063A3F;
+  --primary-border: #0A5F67;
 
-  --border:         #1E293B;
-  --border-2:       #273449;
+  --background:     #003135;
+  --surface:        #024950;
+  --surface-2:      #035962;
+  --surface-3:      #046A74;
 
-  --text:           #F1F5F9;
-  --text-2:         #CBD5E1;
-  --text-3:         #94A3B8;
-  --text-muted:     #64748B;
+  --border:         #0A5B63;
+  --border-2:       #11707A;
 
-  --success:        #22C55E;
-  --success-bg:     #052E16;
-  --success-border: #166534;
-  --success-text:   #4ADE80;
+  --text:           #FFFFFF;
+  --text-2:         #E2F3F6;
+  --text-3:         #AFDDE5;
+  --text-muted:     #84B8BF;
 
-  --warning:        #F59E0B;
-  --warning-bg:     #1C1400;
-  --warning-border: #78350F;
-  --warning-text:   #FCD34D;
+  --success:        #35D07F;
+  --success-bg:     #083D27;
+  --success-border: #116A43;
+  --success-text:   #83F0B5;
 
-  --danger:         #EF4444;
-  --danger-bg:      #1C0404;
-  --danger-border:  #7F1D1D;
-  --danger-text:    #FCA5A5;
+  --warning:        #F0B14A;
+  --warning-bg:     #47310C;
+  --warning-border: #8A621A;
+  --warning-text:   #FFD88B;
 
-  --info:           #38BDF8;
-  --info-bg:        #082F49;
-  --info-border:    #075985;
+  --danger:         #C35B45;
+  --danger-bg:      #3E1B15;
+  --danger-border:  #6E3025;
+  --danger-text:    #F0B2A5;
 
-  --purple:         #A78BFA;
-  --purple-bg:      #1E1040;
-  --purple-border:  #4C1D95;
+  --info:           #0FA4AF;
+  --info-bg:        #063A3F;
+  --info-border:    #0B6F77;
 
-  --teal:           #2DD4BF;
-  --teal-bg:        #042F2E;
-  --teal-border:    #134E4A;
+  --purple:         #B89AFB;
+  --purple-bg:      #2C2048;
+  --purple-border:  #5B47A8;
 
-  --shadow-sm:  0 1px 3px rgba(0, 0, 0, 0.30);
-  --shadow-md:  0 4px 12px rgba(0, 0, 0, 0.35);
-  --shadow-lg:  0 8px 28px rgba(0, 0, 0, 0.40);
-  --shadow-xl:  0 20px 60px rgba(0, 0, 0, 0.50);
-  --shadow-primary: 0 8px 24px rgba(59, 130, 246, 0.25);
+  --teal:           #0FA4AF;
+  --teal-bg:        #063A3F;
+  --teal-border:    #0B6F77;
+
+  --shadow-sm: 0 2px 5px rgba(0,0,0,.35);
+  --shadow-md: 0 8px 20px rgba(0,0,0,.40);
+  --shadow-lg: 0 14px 35px rgba(0,0,0,.45);
+  --shadow-xl: 0 24px 60px rgba(0,0,0,.55);
+
+  --shadow-primary: 0 8px 24px rgba(15,164,175,.30);
 }
 
 /* ============================================================

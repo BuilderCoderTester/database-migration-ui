@@ -11,7 +11,7 @@
   justify-content: center;
   backdrop-filter: blur(8px);
   z-index: 999;
-  animation: fadeIn var(--transition-base);
+  animation: fadeIn var(--transition-base);overflow-y: auto;
 }
 
 .migration-type-modal {
