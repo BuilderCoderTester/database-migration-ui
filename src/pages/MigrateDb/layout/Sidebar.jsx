@@ -10,12 +10,17 @@ import {
   Settings,
   ChevronRight,
   Activity,
+  HardDrive,
+  FolderTree,
+  Layers3,
+  Info,
 } from "lucide-react";
 
 import "../../styles/components/layout/Sidebar.css";
 
 const Sidebar = ({
   active,
+
   onDashboardClick,
   onScriptsClick,
   onPendingClick,
@@ -24,6 +29,12 @@ const Sidebar = ({
   onTablesClick,
   onRunHistoryClick,
   onActivityClick,
+
+  onDriversClick,
+  onMigrationPathsClick,
+  onDatabaseTypesClick,
+  onSettingsClick,
+  onAboutClick,
 }) => {
   return (
     <aside className="sidebar">
@@ -117,10 +128,45 @@ const Sidebar = ({
 
       <div className="sidebar-divider" />
 
-      <div className="sidebar-group">
-        <span className="sidebar-group-title">System</span>
+      <div className="sidebar-divider" />
 
-        <SidebarItem icon={<Settings size={18} />} title="Settings" />
+      <div className="sidebar-group">
+        <span className="sidebar-group-title">Administration</span>
+
+        <SidebarItem
+          icon={<HardDrive size={18} />}
+          title="Driver Manager"
+          active={active === "drivers"}
+          onClick={onDriversClick}
+        />
+
+        <SidebarItem
+          icon={<FolderTree size={18} />}
+          title="Migration Paths"
+          active={active === "paths"}
+          onClick={onMigrationPathsClick}
+        />
+
+        <SidebarItem
+          icon={<Layers3 size={18} />}
+          title="Database Types"
+          active={active === "databaseTypes"}
+          onClick={onDatabaseTypesClick}
+        />
+
+        <SidebarItem
+          icon={<Settings size={18} />}
+          title="Settings"
+          active={active === "settings"}
+          onClick={onSettingsClick}
+        />
+
+        <SidebarItem
+          icon={<Info size={18} />}
+          title="About"
+          active={active === "about"}
+          onClick={onAboutClick}
+        />
       </div>
     </aside>
   );

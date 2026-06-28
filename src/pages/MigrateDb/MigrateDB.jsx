@@ -41,6 +41,13 @@ import useMigrationEditor from "../hooks/useMigrationEditor";
 import { getConnectionId } from "../hooks/useConnection";
 
 import ActivityLogsPage from "./activity/ActivityLogsPage";
+
+import DriverManagerPage from "./system/DriverManagerPage";
+import MigrationPathsPage from "./system/MigrationPathsPage";
+import DatabaseTypesPage from "./system/DatabaseTypesPage";
+import SettingsPage from "./system/SettingsPage";
+import AboutPage from "./system/AboutPage";
+
 // =====================================================
 // MAIN COMPONENT
 // =====================================================
@@ -257,6 +264,11 @@ const MigrateDB = () => {
           onConnectionsClick={() => setActiveView("connections")}
           onTablesClick={() => setActiveView("tables")}
           onActivityClick={() => setActiveView("activity")}
+          onDriversClick={() => setActiveView("drivers")}
+          onMigrationPathsClick={() => setActiveView("migrationPaths")}
+          onDatabaseTypesClick={() => setActiveView("databaseTypes")}
+          onSettingsClick={() => setActiveView("settings")}
+          onAboutClick={() => setActiveView("about")}
         />
 
         <main className="main-content">
@@ -327,6 +339,15 @@ const MigrateDB = () => {
             />
           )}
           {activeView === "activity" && <ActivityLogsPage />}
+          {activeView === "drivers" && <DriverManagerPage />}
+
+          {activeView === "migrationPaths" && <MigrationPathsPage />}
+
+          {activeView === "databaseTypes" && <DatabaseTypesPage />}
+
+          {activeView === "settings" && <SettingsPage />}
+
+          {activeView === "about" && <AboutPage />}
         </main>
       </div>
 

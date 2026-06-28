@@ -1,0 +1,151 @@
+/* ===========================================================
+   MigrationPaths.css
+   =========================================================== */
+
+.paths-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.paths-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 28px;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.paths-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.paths-header p {
+  margin-top: 6px;
+  color: var(--text-secondary);
+}
+
+.paths-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.paths-card {
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-alt);
+  font-weight: 600;
+}
+
+.paths-card table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.paths-card th {
+  padding: 16px 22px;
+  text-align: left;
+  background: var(--surface-alt);
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.paths-card td {
+  padding: 18px 22px;
+  border-top: 1px solid var(--border);
+}
+
+.paths-card tbody tr:hover {
+  background: rgba(37,99,235,.05);
+}
+
+.default-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(34,197,94,.12);
+  color: #16a34a;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  background: rgba(239,68,68,.1);
+  color: #dc2626;
+}
+
+.btn-primary,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-primary {
+  border: none;
+  background: #2563eb;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.btn-secondary {
+  border: 1px solid var(--border);
+  background: white;
+}
+
+.btn-secondary:hover {
+  background: var(--surface-alt);
+}
+
+@media (max-width: 900px) {
+
+  .paths-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .paths-actions {
+    width: 100%;
+  }
+
+  .paths-actions button {
+    flex: 1;
+  }
+
+}
