@@ -1,0 +1,257 @@
+/* ===========================================================
+   DriverManager.css
+   =========================================================== */
+
+.driver-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ===========================================================
+   Header
+   =========================================================== */
+
+.driver-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 24px 28px;
+}
+
+.driver-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.driver-header p {
+  margin-top: 6px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.driver-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* ===========================================================
+   Layout
+   =========================================================== */
+
+.driver-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+/* ===========================================================
+   Cards
+   =========================================================== */
+
+.driver-list,
+.driver-details {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--surface-alt);
+}
+
+/* ===========================================================
+   Table
+   =========================================================== */
+
+.driver-list table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.driver-list thead {
+  background: var(--surface-alt);
+}
+
+.driver-list th {
+  text-align: left;
+  padding: 16px 22px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.driver-list td {
+  padding: 18px 22px;
+  border-top: 1px solid var(--border);
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.driver-list tbody tr {
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.driver-list tbody tr:hover {
+  background: rgba(37, 99, 235, 0.05);
+}
+
+.driver-list tbody tr.selected {
+  background: rgba(37, 99, 235, 0.12);
+}
+
+/* ===========================================================
+   Status
+   =========================================================== */
+
+.status-ok,
+.status-missing {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.status-ok {
+  color: #16a34a;
+}
+
+.status-missing {
+  color: #dc2626;
+}
+
+/* ===========================================================
+   Details
+   =========================================================== */
+
+.details {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.detail-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.detail-row label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.detail-row span {
+  color: var(--text-primary);
+  font-size: 14px;
+  word-break: break-word;
+}
+
+.details-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.empty-state {
+  padding: 50px 20px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+/* ===========================================================
+   Buttons
+   =========================================================== */
+
+.btn-primary,
+.btn-secondary,
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.btn-primary {
+  border: none;
+  background: #2563eb;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--surface-alt);
+}
+
+.btn-danger {
+  background: #dc2626;
+  color: white;
+  border: none;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+}
+
+/* ===========================================================
+   Responsive
+   =========================================================== */
+
+@media (max-width: 1000px) {
+
+  .driver-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .driver-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .driver-actions {
+    width: 100%;
+  }
+
+  .driver-actions button {
+    flex: 1;
+  }
+
+  .details-actions {
+    flex-direction: column;
+  }
+
+}

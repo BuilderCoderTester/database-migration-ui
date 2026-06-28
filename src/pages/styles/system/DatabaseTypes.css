@@ -1,0 +1,122 @@
+/* ===========================================================
+   DatabaseTypes.css
+   =========================================================== */
+
+.database-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.database-header {
+  padding: 24px 28px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+}
+
+.database-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.database-header p {
+  margin-top: 6px;
+  color: var(--text-secondary);
+}
+
+.database-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(320px,1fr));
+  gap: 22px;
+}
+
+.database-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  transition: .25s;
+}
+
+.database-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(0,0,0,.08);
+}
+
+.database-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.database-card-header h3 {
+  margin: 0;
+}
+
+.database-card p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.database-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.database-row span {
+  color: var(--text-secondary);
+}
+
+.database-status {
+  margin-top: 10px;
+}
+
+.status-success,
+.status-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.status-success {
+  color: #16a34a;
+}
+
+.status-error {
+  color: #dc2626;
+}
+
+.database-btn {
+  margin-top: auto;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: white;
+  padding: 11px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.database-btn:hover {
+  background: #1d4ed8;
+}
+
+@media (max-width: 768px){
+
+.database-grid{
+    grid-template-columns:1fr;
+}
+
+}
