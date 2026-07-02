@@ -40,7 +40,7 @@ const MigrationTable = ({
       const { data: connectionId } = await axios.get(`${API}/get-connection`);
       if (!connectionId) return;
 
-      await axios.post(`${API}/migrate`, null, {
+      await axios.post(`${API}/migrateByVersion`, null, {
         params: { connectionId, versionId: version },
       });
 
@@ -143,7 +143,7 @@ const MigrationTable = ({
   }) => {
     const { data: connectionId } = await axios.get(`${API}/get-connection`);
 
-    await axios.post(`${API}/rollback`, {
+    await axios.post(`${API}/rollback-version`, {
       connectionId,
 
       version: currentVersion,
@@ -184,7 +184,7 @@ const MigrationTable = ({
                   )}
                 </td>
                 <td className="mono text-dim">
-                  {row.version ? `V${row.version}` : "-"}
+                  {row.version ? `${row.version}` : "-"}
                 </td>
                 <td className="text-main">{row.description || "-"}</td>
                 <td className="mono text-muted">{row.executedAt || "-"}</td>
